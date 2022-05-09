@@ -4,6 +4,9 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
+import TypesSection from "src/drawer/TypesSelection";
+import { useState } from "react";
+import { expenseTypes } from "src/constants/types";
 
 const StyledForm = styled(Box)(() => ({
   display: "flex",
@@ -35,13 +38,12 @@ const StyledForm = styled(Box)(() => ({
 }));
 
 const ExpenseForm = () => {
-  const { control } = useForm();
+  const { control, setValue } = useForm<ExpenseFormState>();
+  const [showTypeSelection, setShowTypeSelection] = useState(false);
   return (
     <StyledForm component="form">
       <Box className="row-item">
-        <Box className="item-title">
-          <Typography>日期</Typography>
-        </Box>
+        <Box className="item-title">日期</Box>
         <Box className="item-field">
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Controller
@@ -82,6 +84,7 @@ const ExpenseForm = () => {
                 variant="filled"
                 disabled={true}
                 className="no-label"
+                onClick={() => setShowTypeSelection(true)}
                 InputProps={{
                   disableUnderline: true,
                 }}
@@ -131,11 +134,21 @@ const ExpenseForm = () => {
           />
         </Box>
       </Box>
+      <TypesSection
+        open={showTypeSelection}
+        onClose={() => setShowTypeSelection(false)}
+        itemList={expenseTypes}
+      />
     </StyledForm>
   );
 };
 
-export interface ExpenseFormState {}
+export interface ExpenseFormState {
+  date: Date;
+  type: string;
+  money: string;
+  note: string;
+}
 
 export interface ExpenseFormProps {}
 
