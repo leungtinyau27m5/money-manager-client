@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material";
 
 export default createTheme({
-  pageMaxWidth: 414,
+  pageMaxWidth: 600,
   palette: {
     primary: {
       main: "#ED5B62",

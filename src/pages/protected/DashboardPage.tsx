@@ -1,9 +1,13 @@
-import { Box, ButtonBase, styled, Toolbar, Typography } from "@mui/material";
+import { Box, ButtonBase, styled, Typography } from "@mui/material";
 import { useState } from "react";
 import YearMonthPicker from "src/components/myDatePicker/YearMonthPicker";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { addLeadingZero, toCurrency } from "src/helpers/common";
 import ResponsiveTextBox from "src/components/text/ResponsiveTextBox";
+import { useSetRecoilState } from "recoil";
+import { dateAtom } from "src/data/date/date.atom";
+import AddTransaction from "src/components/buttons/AddTransaction";
+import TransCreationPanel from "src/components/dialogs/TransCreationPanel";
 
 const StyledDashboardPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -46,6 +50,7 @@ const StyledDashboardPage = styled(Box)(({ theme }) => ({
 
 const DashboardPage = () => {
   const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
+  const setDateAtom = useSetRecoilState(dateAtom);
   const [dateObj, setDateObj] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -56,6 +61,7 @@ const DashboardPage = () => {
       year,
       month,
     });
+    setDateAtom(new Date(`${year}/${month + 1}`));
   };
 
   return (
@@ -102,6 +108,7 @@ const DashboardPage = () => {
           month: dateObj.month,
         }}
       />
+      <AddTransaction />
     </StyledDashboardPage>
   );
 };

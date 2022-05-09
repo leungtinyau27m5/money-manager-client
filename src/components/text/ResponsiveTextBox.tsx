@@ -4,7 +4,7 @@ import { Box, styled } from "@mui/material";
 const StyledBox = styled(Box)(() => ({
   fontSize: 12,
   width: "100%",
-  textAlign: 'center'
+  textAlign: "center",
 }));
 
 const ResponsiveTextBox = (props: ResponsiveTextBoxProps) => {
@@ -33,7 +33,7 @@ const ResponsiveTextBox = (props: ResponsiveTextBoxProps) => {
     };
   }, [handleResize]);
 
-  return <StyledBox ref={me}></StyledBox>;
+  return <StyledBox ref={me} className="responsive-text-node"></StyledBox>;
 };
 
 export interface ResponsiveTextBoxProps {

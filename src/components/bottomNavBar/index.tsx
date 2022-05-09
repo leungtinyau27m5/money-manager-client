@@ -6,13 +6,17 @@ import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomiz
 import { Link, useLocation } from "react-router-dom";
 import clsx from "clsx";
 
-const StyledBottomNavBar = styled(Box)(() => ({
+const StyledBottomNavBar = styled(Box)(({ theme }) => ({
   position: "fixed",
   bottom: 0,
-  left: 0,
+  left: "50%",
+  transform: "translateX(-50%)",
   width: "100%",
   display: "flex",
   boxShadow: "0px -2px 5px 2px rgba(15, 15, 15, 0.15)",
+  [theme.breakpoints.up("md")]: {
+    maxWidth: theme.pageMaxWidth,
+  },
   "& > *": {
     flexGrow: 1,
     height: 54,
@@ -36,7 +40,7 @@ const StyledBottomNavBar = styled(Box)(() => ({
       },
       [`& .${svgIconClasses.root}`]: {
         transform: "translateY(0px)",
-        transition: 'all .3s ease-in-out'
+        transition: "all .3s ease-in-out",
       },
       "&.active": {
         "& > .label": {

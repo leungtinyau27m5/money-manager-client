@@ -5,7 +5,13 @@ import { useRecoilState } from "recoil";
 import { mainMenuAtom } from "src/data/system/system.atom";
 import MainMenu from "../mainMenu";
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({}));
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  left: "50%",
+  transform: "translateX(-50%)",
+  [theme.breakpoints.up("md")]: {
+    maxWidth: theme.pageMaxWidth,
+  },
+}));
 
 const MyAppBar = () => {
   const [mainMenu, setMainMenu] = useRecoilState(mainMenuAtom);
