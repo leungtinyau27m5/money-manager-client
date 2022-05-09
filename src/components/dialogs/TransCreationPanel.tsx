@@ -80,15 +80,17 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
   };
 
   const submitCallback: SubmitCallbackHandler = async (data) => {
-    const { date, money, title, type, note } = data;
-    const year = date.getFullYear();
-    const month = date.getMonth();
+    const { date: dateObj, money, title, type, note, iconKey } = data;
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
     const result = await updateItems(`${year}-${month}`, [
       {
         money,
         title,
         type,
         note,
+        iconKey,
+        date: dateObj.getDate(),
       },
     ]);
     console.log(result);
@@ -148,6 +150,7 @@ export type SubmitCallbackHandler = (data: {
   title: string;
   money: string;
   note: string;
+  iconKey: string;
   type: "expense" | "income";
 }) => void;
 

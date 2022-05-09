@@ -58,6 +58,7 @@ const IncomeForm = (props: IncomeFormProps) => {
 
   const handleTypeSelect = (type: ItemTypes) => {
     setValue("title", type.text);
+    setValue("iconKey", type.key);
   };
 
   const handleFormSubmit: SubmitHandler<IncomeFormState> = (evt) => {
@@ -116,6 +117,19 @@ const IncomeForm = (props: IncomeFormProps) => {
                 InputProps={{
                   disableUnderline: true,
                 }}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="iconKey"
+            defaultValue=""
+            render={({ field }) => (
+              <MyStyledTextField
+                {...field}
+                variant="filled"
+                type="hidden"
+                sx={{ display: "none" }}
               />
             )}
           />
@@ -205,6 +219,7 @@ export interface IncomeFormState {
   title: string;
   money: string;
   note: string;
+  iconKey: string;
 }
 
 export interface IncomeFormProps {

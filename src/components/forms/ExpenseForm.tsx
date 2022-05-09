@@ -58,6 +58,7 @@ const ExpenseForm = (props: ExpenseFormProps) => {
 
   const handleTypeSelect = (type: ItemTypes) => {
     setValue("title", type.text);
+    setValue("iconKey", type.key);
   };
 
   const handleFormSubmit: SubmitHandler<ExpenseFormState> = (evt) => {
@@ -126,6 +127,19 @@ const ExpenseForm = (props: ExpenseFormProps) => {
                 }}
                 error={error !== undefined}
                 helperText={error ? "Required" : ""}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="iconKey"
+            defaultValue=""
+            render={({ field }) => (
+              <MyStyledTextField
+                {...field}
+                variant="filled"
+                type="hidden"
+                sx={{ display: "none" }}
               />
             )}
           />
@@ -217,6 +231,7 @@ const ExpenseForm = (props: ExpenseFormProps) => {
 export interface ExpenseFormState {
   date: Date;
   title: string;
+  iconKey: string;
   money: string;
   note: string;
 }

@@ -4,6 +4,8 @@ export interface TransRow {
   money: string;
   note: string;
   title: string;
+  iconKey: string;
+  date: number;
   type: "expense" | "income";
 }
 

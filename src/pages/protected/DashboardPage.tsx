@@ -1,13 +1,16 @@
+import { useMemo, useState } from "react";
 import { Box, ButtonBase, styled, Typography } from "@mui/material";
-import { useState } from "react";
 import YearMonthPicker from "src/components/myDatePicker/YearMonthPicker";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { addLeadingZero, toCurrency } from "src/helpers/common";
 import ResponsiveTextBox from "src/components/text/ResponsiveTextBox";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 import { dateAtom } from "src/data/date/date.atom";
 import AddTransaction from "src/components/buttons/AddTransaction";
-import TransCreationPanel from "src/components/dialogs/TransCreationPanel";
+import {
+  TransRow,
+  transSelectorByDate,
+} from "src/data/transactions/transaction.atom";
 
 const StyledDashboardPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -55,6 +58,25 @@ const DashboardPage = () => {
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
+  const transData = useRecoilValue(
+    transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
+  );
+  const dataByDate = useMemo(() => {
+    const days = new Date(dateObj.year, dateObj.month, 0).getDate();
+    const data = {} as { [key: number]: TransRow[] };
+    const arr = [...transData];
+    for (let i = 1; i <= days; i++) {
+      data[i] = [];
+      const ids = arr.reduce((arr, ele, index) => {
+        if (ele.date === i) arr.push(index);
+        return arr;
+      }, [] as number[]);
+      ids.forEach((index) => {
+        data[i] = data[i].concat(...arr.splice(index, 1));
+      });
+    }
+    return data;
+  }, [dateObj.month, dateObj.year, transData]);
 
   const handleOnChange = (year: number, month: number) => {
     setDateObj({
@@ -63,6 +85,8 @@ const DashboardPage = () => {
     });
     setDateAtom(new Date(`${year}/${month + 1}`));
   };
+
+  console.log(dataByDate);
 
   return (
     <StyledDashboardPage className="page-inner has-app-bar has-bottom-nav min-scrollbar">
