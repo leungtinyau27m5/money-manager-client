@@ -67,13 +67,13 @@ const DashboardPage = () => {
     const arr = [...transData];
     for (let i = 1; i <= days; i++) {
       data[i] = [];
-      const ids = arr.reduce((arr, ele, index) => {
-        if (ele.date === i) arr.push(index);
-        return arr;
-      }, [] as number[]);
-      ids.forEach((index) => {
-        data[i] = data[i].concat(...arr.splice(index, 1));
-      });
+      for (let j = 0; j < arr.length; j++) {
+        if (arr[j].date === i) {
+          const temp = arr.splice(j, 1);
+          data[i] = data[i].concat(...temp);
+          j--;
+        }
+      }
     }
     return data;
   }, [dateObj.month, dateObj.year, transData]);

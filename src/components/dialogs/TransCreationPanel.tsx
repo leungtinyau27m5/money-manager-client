@@ -28,6 +28,7 @@ import IncomeForm from "../forms/IncomeForm";
 import { StorageCtx, StorageCtxState } from "src/providers/storage/context";
 import { transAtom, TransRow } from "src/data/transactions/transaction.atom";
 import { useSetRecoilState } from "recoil";
+import { v4 as uuidv4 } from "uuid";
 
 const Transition = forwardRef(
   (
@@ -91,6 +92,7 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
         note,
         iconKey,
         date: dateObj.getDate(),
+        id: uuidv4(),
       },
     ]);
     console.log(result);

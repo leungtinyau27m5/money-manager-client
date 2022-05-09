@@ -7,6 +7,7 @@ export interface TransRow {
   iconKey: string;
   date: number;
   type: "expense" | "income";
+  id: string;
 }
 
 export const transAtom = atom<{ [date: string]: TransRow[] }>({
