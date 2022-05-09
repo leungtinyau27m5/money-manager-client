@@ -1,10 +1,5 @@
-import {
-  Box,
-  ButtonBase,
-  Dialog,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Box, ButtonBase, Dialog, styled, Typography } from "@mui/material";
+import { ItemTypes } from "src/constants/types";
 
 const StyledBox = styled(Box)(() => ({
   display: "grid",
@@ -31,12 +26,22 @@ const StyledBox = styled(Box)(() => ({
 }));
 
 const TypesSection = (props: TypesSectionProps) => {
-  const { open, onClose, itemList } = props;
+  const { open, onClose, itemList, handleTypeSelect } = props;
+
+  const handleItemSelect = (ele: ItemTypes) => {
+    handleTypeSelect(ele);
+    onClose();
+  };
+
   return (
     <Dialog open={open} onClose={() => onClose()} fullWidth>
       <StyledBox className="min-scrollbar">
         {itemList.map((ele) => (
-          <ButtonBase className="type-item" key={ele.icon}>
+          <ButtonBase
+            className="type-item"
+            key={ele.icon}
+            onClick={() => handleItemSelect(ele)}
+          >
             <Box component="span" className="material-icons-round">
               {ele.icon}
             </Box>
@@ -53,7 +58,8 @@ const TypesSection = (props: TypesSectionProps) => {
 export interface TypesSectionProps {
   open: boolean;
   onClose: () => void;
-  itemList: { icon: string; text: string }[];
+  itemList: ItemTypes[];
+  handleTypeSelect: (type: ItemTypes) => void;
 }
 
 export default TypesSection;

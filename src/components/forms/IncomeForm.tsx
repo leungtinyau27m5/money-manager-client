@@ -6,7 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
 import TypesSection from "src/drawer/TypesSelection";
-import { expenseTypes, ItemTypes } from "src/constants/types";
+import { expenseTypes, incomeTypes, ItemTypes } from "src/constants/types";
 import Calculator from "src/components/calculator";
 import { formatCurrencyWithPlaces } from "src/helpers/common";
 
@@ -44,9 +44,9 @@ const StyledForm = styled(Box)(({ theme }) => ({
   },
 }));
 
-const ExpenseForm = (props: ExpenseFormProps) => {
+const IncomeForm = (props: IncomeFormProps) => {
   const { store } = props;
-  const { control, setValue } = useForm<ExpenseFormState>();
+  const { control, setValue } = useForm<IncomeFormState>();
   const [showTypeSelection, setShowTypeSelection] = useState(false);
   const [showCaltor, setShowCaltor] = useState(false);
 
@@ -169,14 +169,18 @@ const ExpenseForm = (props: ExpenseFormProps) => {
         className="action-row"
         sx={{ display: "flex", mt: 2, justifyContent: "center" }}
       >
-        <Button variant="contained" sx={{ flex: 1, py: 1, maxWidth: 220 }}>
+        <Button
+          variant="contained"
+          sx={{ flex: 1, py: 1, maxWidth: 220 }}
+          color="secondary"
+        >
           確定
         </Button>
       </Box>
       <TypesSection
         open={showTypeSelection}
         onClose={() => setShowTypeSelection(false)}
-        itemList={expenseTypes}
+        itemList={incomeTypes}
         handleTypeSelect={handleTypeSelect}
       />
       <Calculator
@@ -188,15 +192,15 @@ const ExpenseForm = (props: ExpenseFormProps) => {
   );
 };
 
-export interface ExpenseFormState {
+export interface IncomeFormState {
   date: Date;
   type: string;
   money: string;
   note: string;
 }
 
-export interface ExpenseFormProps {
+export interface IncomeFormProps {
   store: LocalForage;
 }
 
-export default ExpenseForm;
+export default IncomeForm;

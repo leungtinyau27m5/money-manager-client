@@ -5,11 +5,11 @@ import {
   dialogClasses,
   paperClasses,
   ButtonBase,
-  TextField,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { MyStyledTextField } from "../forms/MyTextField";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import { useCallback, useEffect } from "react";
 
 const StyledDialog = styled(Dialog)(() => ({
   [`& .${dialogClasses.container}`]: {
@@ -57,35 +57,44 @@ const Calculator = (props: CalculatorProps) => {
   const { control, setValue, getValues, watch } = useForm<CalculatorState>();
   const formulaWatch = watch("formula", "");
 
-  const handleNumberKey = (val: string) => {
-    const newValues = getValues("formula");
-    setValue("formula", newValues + val);
-  };
+  const handleNumberKey = useCallback(
+    (val: string) => {
+      const newValues = getValues("formula");
+      setValue("formula", newValues + val);
+    },
+    [getValues, setValue]
+  );
 
   const resetValues = () => {
     setValue("formula", "");
     setValue("result", "");
   };
 
-  const handleOperation = (symbol: "*" | "/" | "-" | "+") => {
-    const newValues = getValues("formula");
-    if (newValues.match(/[*\-+/]\s$/)) return;
-    setValue("formula", `${newValues} ${symbol} `);
-  };
+  const handleOperation = useCallback(
+    (symbol: "*" | "/" | "-" | "+") => {
+      const newValues = getValues("formula");
+      if (newValues.match(/[*\-+/]\s$/)) return;
+      setValue("formula", `${newValues} ${symbol} `);
+    },
+    [getValues, setValue]
+  );
 
-  const handleDotKey = (dot: string) => {
-    const newValues = getValues("formula");
-    if (!newValues.match(/\d+$/g)) return;
-    const splits = newValues.split(/[*\-+/]/g);
-    const lastText = splits.pop();
-    if (lastText && lastText.includes(dot)) {
-      return;
-    }
+  const handleDotKey = useCallback(
+    (dot: string) => {
+      const newValues = getValues("formula");
+      if (!newValues.match(/\d+$/g)) return;
+      const splits = newValues.split(/[*\-+/]/g);
+      const lastText = splits.pop();
+      if (lastText && lastText.includes(dot)) {
+        return;
+      }
 
-    setValue("formula", `${newValues}${dot}`);
-  };
+      setValue("formula", `${newValues}${dot}`);
+    },
+    [getValues, setValue]
+  );
 
-  const handleReduceCal = (a: string[]): string[] => {
+  const handleReduceCal = useCallback((a: string[]): string[] => {
     if (a.includes("/")) {
       const idx = a.findIndex((ele) => ele === "/");
       const first = Number(a[idx - 1]);
@@ -123,9 +132,9 @@ const Calculator = (props: CalculatorProps) => {
       a.splice(idx, 2);
     }
     return a.length === 1 ? a : handleReduceCal(a);
-  };
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const formula = getValues("formula");
     if (formula.match(/[*\-+/]/)) {
       const arr = formula.split(" ");
@@ -142,7 +151,30 @@ const Calculator = (props: CalculatorProps) => {
       onClose();
     }
     setValue("formula", "");
-  };
+  }, [getValues, handleReduceCal, handleResult, onClose, setValue]);
+
+  useEffect(() => {
+    const nKeys = [] as string[];
+    for (let i = 0; i <= 9; i++) {
+      nKeys.push(i.toString());
+    }
+    const handleKeyUp = (evt: KeyboardEvent) => {
+      const { key } = evt;
+      if (nKeys.includes(key)) {
+        handleNumberKey(key);
+      } else if ("." === key) {
+        handleDotKey(".");
+      } else if (["/", "*", "-", "+"].includes(key)) {
+        handleOperation(key as any);
+      } else if ("Enter" === key) {
+        handleSubmit();
+      }
+    };
+    if (open) window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [handleDotKey, handleNumberKey, handleOperation, handleSubmit, open]);
 
   return (
     <StyledDialog open={open} onClose={() => onClose()}>

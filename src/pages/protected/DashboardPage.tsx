@@ -96,7 +96,7 @@ const DashboardPage = () => {
           sx={{ color: (theme) => theme.palette.error.main }}
         >
           <Typography variant="caption">結餘</Typography>
-          <ResponsiveTextBox str={`${toCurrency(-355587.6)}`} />
+          <ResponsiveTextBox str={`${toCurrency(-355551287.6)}`} />
         </Box>
       </Box>
       <YearMonthPicker

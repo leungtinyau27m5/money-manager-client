@@ -24,6 +24,8 @@ import "swiper/css";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import type { Swiper } from "swiper";
 import ExpenseForm from "../forms/ExpenseForm";
+import IncomeForm from "../forms/IncomeForm";
+import { StorageCtx } from "src/providers/storage/context";
 
 const Transition = forwardRef(
   (
@@ -105,10 +107,14 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            <ExpenseForm />
+            <StorageCtx.Consumer>
+              {({ store }) => <ExpenseForm store={store} />}
+            </StorageCtx.Consumer>
           </SwiperSlide>
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            收入
+            <StorageCtx.Consumer>
+              {({ store }) => <IncomeForm store={store} />}
+            </StorageCtx.Consumer>
           </SwiperSlide>
         </SwiperView>
       </Box>

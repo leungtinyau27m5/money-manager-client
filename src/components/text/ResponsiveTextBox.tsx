@@ -13,14 +13,15 @@ const ResponsiveTextBox = (props: ResponsiveTextBoxProps) => {
 
   const handleResize = useCallback(() => {
     if (!me.current) return;
-    const rect = me.current.getBoundingClientRect();
-    const fontSize = rect.width / str.length;
+    if (!me.current.parentElement) return;
+    const rect = me.current.parentElement.getBoundingClientRect();
+    const fontSize = rect.width / (str.length - 6);
+    me.current.style.fontSize = 14 + "px";
     if (fontSize < 14) {
-      me.current.style.transform = `scale(${fontSize}/14)`;
-      me.current.style.fontSize = fontSize + "px";
+      console.log(fontSize);
+      me.current.style.transform = `scale(${fontSize / 14})`;
     } else {
       me.current.style.transform = "scale(1)";
-      me.current.style.fontSize = 14 + "px";
     }
     me.current.innerText = str;
   }, [str]);

@@ -1,3 +1,9 @@
+export type ItemTypes = {
+  key: string;
+  icon: string;
+  text: string;
+};
+
 export const expenseTypes = [
   {
     key: "food",
@@ -93,5 +99,23 @@ export const expenseTypes = [
     key: "debt",
     icon: "payments",
     text: "供款",
+  },
+];
+
+export const incomeTypes = [
+  {
+    key: "salary",
+    icon: "payments",
+    text: "薪金",
+  },
+  {
+    key: "interest",
+    icon: "account_balance",
+    text: "利息",
+  },
+  {
+    key: "sell",
+    icon: "sell",
+    text: "賣出",
   },
 ];
