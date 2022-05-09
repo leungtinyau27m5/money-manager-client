@@ -73,6 +73,18 @@ const Calculator = (props: CalculatorProps) => {
     setValue("formula", `${newValues} ${symbol} `);
   };
 
+  const handleDotKey = (dot: string) => {
+    const newValues = getValues("formula");
+    if (!newValues.match(/\d+$/g)) return;
+    const splits = newValues.split(/[*\-+/]/g);
+    const lastText = splits.pop();
+    if (lastText && lastText.includes(dot)) {
+      return;
+    }
+
+    setValue("formula", `${newValues}${dot}`);
+  };
+
   const handleReduceCal = (a: string[]): string[] => {
     if (a.includes("/")) {
       const idx = a.findIndex((ele) => ele === "/");
@@ -206,7 +218,7 @@ const Calculator = (props: CalculatorProps) => {
           <ButtonBase onClick={() => handleNumberKey("2")}>2</ButtonBase>
           <ButtonBase onClick={() => handleNumberKey("3")}>3</ButtonBase>
           <ButtonBase onClick={() => handleNumberKey("0")}>0</ButtonBase>
-          <ButtonBase>.</ButtonBase>
+          <ButtonBase onClick={() => handleDotKey(".")}>.</ButtonBase>
           <ButtonBase
             sx={{
               gridColumnEnd: "span 2",
