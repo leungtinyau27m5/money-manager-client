@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Button, styled } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
@@ -9,6 +9,7 @@ import TypesSection from "src/drawer/TypesSelection";
 import { expenseTypes, ItemTypes } from "src/constants/types";
 import Calculator from "src/components/calculator";
 import { formatCurrencyWithPlaces } from "src/helpers/common";
+import { SubmitCallbackHandler } from "../dialogs/TransCreationPanel";
 
 const StyledForm = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -45,8 +46,8 @@ const StyledForm = styled(Box)(({ theme }) => ({
 }));
 
 const ExpenseForm = (props: ExpenseFormProps) => {
-  const { store } = props;
-  const { control, setValue } = useForm<ExpenseFormState>();
+  const { submitCallback } = props;
+  const { control, setValue, handleSubmit } = useForm<ExpenseFormState>();
   const [showTypeSelection, setShowTypeSelection] = useState(false);
   const [showCaltor, setShowCaltor] = useState(false);
 
@@ -56,12 +57,18 @@ const ExpenseForm = (props: ExpenseFormProps) => {
   };
 
   const handleTypeSelect = (type: ItemTypes) => {
-    console.log(type);
-    setValue("type", type.text);
+    setValue("title", type.text);
+  };
+
+  const handleFormSubmit: SubmitHandler<ExpenseFormState> = (evt) => {
+    submitCallback({
+      ...evt,
+      type: "expense",
+    });
   };
 
   return (
-    <StyledForm component="form">
+    <StyledForm component="form" onSubmit={handleSubmit(handleFormSubmit)}>
       <Box className="row-item">
         <Box className="item-title">日期</Box>
         <Box className="item-field">
@@ -70,7 +77,10 @@ const ExpenseForm = (props: ExpenseFormProps) => {
               control={control}
               name="date"
               defaultValue={new Date()}
-              render={({ field }) => (
+              rules={{
+                required: true,
+              }}
+              render={({ field, fieldState: { error } }) => (
                 <MobileDatePicker
                   {...field}
                   onChange={(newValue) => field.onChange(newValue)}
@@ -80,6 +90,8 @@ const ExpenseForm = (props: ExpenseFormProps) => {
                       {...params}
                       variant="filled"
                       className="no-label"
+                      error={error !== undefined}
+                      helperText={error ? "Required" : ""}
                       InputProps={{
                         ...params.InputProps,
                         disableUnderline: true,
@@ -97,9 +109,12 @@ const ExpenseForm = (props: ExpenseFormProps) => {
         <Box className="item-field">
           <Controller
             control={control}
-            name="type"
+            name="title"
             defaultValue=""
-            render={({ field }) => (
+            rules={{
+              required: true,
+            }}
+            render={({ field, fieldState: { error } }) => (
               <MyStyledTextField
                 {...field}
                 variant="filled"
@@ -109,6 +124,8 @@ const ExpenseForm = (props: ExpenseFormProps) => {
                 InputProps={{
                   disableUnderline: true,
                 }}
+                error={error !== undefined}
+                helperText={error ? "Required" : ""}
               />
             )}
           />
@@ -121,13 +138,18 @@ const ExpenseForm = (props: ExpenseFormProps) => {
             control={control}
             name="money"
             defaultValue=""
-            render={({ field }) => (
+            rules={{
+              required: true,
+            }}
+            render={({ field, fieldState: { error } }) => (
               <MyStyledTextField
                 {...field}
                 variant="filled"
                 className="no-label"
                 disabled={true}
                 onClick={() => setShowCaltor(true)}
+                error={error !== undefined}
+                helperText={error ? "Required" : ""}
                 InputProps={{
                   disableUnderline: true,
                 }}
@@ -169,7 +191,11 @@ const ExpenseForm = (props: ExpenseFormProps) => {
         className="action-row"
         sx={{ display: "flex", mt: 2, justifyContent: "center" }}
       >
-        <Button variant="contained" sx={{ flex: 1, py: 1, maxWidth: 220 }}>
+        <Button
+          variant="contained"
+          sx={{ flex: 1, py: 1, maxWidth: 220 }}
+          type="submit"
+        >
           確定
         </Button>
       </Box>
@@ -190,13 +216,13 @@ const ExpenseForm = (props: ExpenseFormProps) => {
 
 export interface ExpenseFormState {
   date: Date;
-  type: string;
+  title: string;
   money: string;
   note: string;
 }
 
 export interface ExpenseFormProps {
-  store: LocalForage;
+  submitCallback: SubmitCallbackHandler;
 }
 
 export default ExpenseForm;

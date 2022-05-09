@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Button, styled } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
@@ -9,6 +9,7 @@ import TypesSection from "src/drawer/TypesSelection";
 import { expenseTypes, incomeTypes, ItemTypes } from "src/constants/types";
 import Calculator from "src/components/calculator";
 import { formatCurrencyWithPlaces } from "src/helpers/common";
+import { SubmitCallbackHandler } from "../dialogs/TransCreationPanel";
 
 const StyledForm = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -45,8 +46,8 @@ const StyledForm = styled(Box)(({ theme }) => ({
 }));
 
 const IncomeForm = (props: IncomeFormProps) => {
-  const { store } = props;
-  const { control, setValue } = useForm<IncomeFormState>();
+  const { submitCallback } = props;
+  const { control, setValue, handleSubmit } = useForm<IncomeFormState>();
   const [showTypeSelection, setShowTypeSelection] = useState(false);
   const [showCaltor, setShowCaltor] = useState(false);
 
@@ -56,12 +57,18 @@ const IncomeForm = (props: IncomeFormProps) => {
   };
 
   const handleTypeSelect = (type: ItemTypes) => {
-    console.log(type);
-    setValue("type", type.text);
+    setValue("title", type.text);
+  };
+
+  const handleFormSubmit: SubmitHandler<IncomeFormState> = (evt) => {
+    submitCallback({
+      ...evt,
+      type: "income",
+    });
   };
 
   return (
-    <StyledForm component="form">
+    <StyledForm component="form" onSubmit={handleSubmit(handleFormSubmit)}>
       <Box className="row-item">
         <Box className="item-title">日期</Box>
         <Box className="item-field">
@@ -97,7 +104,7 @@ const IncomeForm = (props: IncomeFormProps) => {
         <Box className="item-field">
           <Controller
             control={control}
-            name="type"
+            name="title"
             defaultValue=""
             render={({ field }) => (
               <MyStyledTextField
@@ -173,6 +180,7 @@ const IncomeForm = (props: IncomeFormProps) => {
           variant="contained"
           sx={{ flex: 1, py: 1, maxWidth: 220 }}
           color="secondary"
+          type="submit"
         >
           確定
         </Button>
@@ -194,13 +202,13 @@ const IncomeForm = (props: IncomeFormProps) => {
 
 export interface IncomeFormState {
   date: Date;
-  type: string;
+  title: string;
   money: string;
   note: string;
 }
 
 export interface IncomeFormProps {
-  store: LocalForage;
+  submitCallback: SubmitCallbackHandler;
 }
 
 export default IncomeForm;

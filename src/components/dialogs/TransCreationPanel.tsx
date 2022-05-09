@@ -25,7 +25,9 @@ import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import type { Swiper } from "swiper";
 import ExpenseForm from "../forms/ExpenseForm";
 import IncomeForm from "../forms/IncomeForm";
-import { StorageCtx } from "src/providers/storage/context";
+import { StorageCtx, StorageCtxState } from "src/providers/storage/context";
+import { transAtom, TransRow } from "src/data/transactions/transaction.atom";
+import { useSetRecoilState } from "recoil";
 
 const Transition = forwardRef(
   (
@@ -61,7 +63,8 @@ const TabPanel = (
 };
 
 const TransCreationPanel = (props: TransCreationPanelProps) => {
-  const { open, onClose } = props;
+  const { open, onClose, updateItems } = props;
+  const setTransData = useSetRecoilState(transAtom);
   const [activePanel, setActivePanel] = useState(0);
   const swiperRef = useRef<Swiper | null>(null);
 
@@ -74,6 +77,22 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
 
   const hanldeSlideChange = (swiper: Swiper) => {
     setActivePanel(swiper.activeIndex);
+  };
+
+  const submitCallback: SubmitCallbackHandler = async (data) => {
+    const { date, money, title, type, note } = data;
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const result = await updateItems(`${year}-${month}`, [
+      {
+        money,
+        title,
+        type,
+        note,
+      },
+    ]);
+    console.log(result);
+    onClose();
   };
 
   return (
@@ -107,14 +126,10 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            <StorageCtx.Consumer>
-              {({ store }) => <ExpenseForm store={store} />}
-            </StorageCtx.Consumer>
+            <ExpenseForm submitCallback={submitCallback} />
           </SwiperSlide>
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            <StorageCtx.Consumer>
-              {({ store }) => <IncomeForm store={store} />}
-            </StorageCtx.Consumer>
+            <IncomeForm submitCallback={submitCallback} />
           </SwiperSlide>
         </SwiperView>
       </Box>
@@ -124,7 +139,16 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
 
 export interface TransCreationPanelProps {
   open: boolean;
+  updateItems: StorageCtxState["updateItems"];
   onClose: () => void;
 }
+
+export type SubmitCallbackHandler = (data: {
+  date: Date;
+  title: string;
+  money: string;
+  note: string;
+  type: "expense" | "income";
+}) => void;
 
 export default TransCreationPanel;
