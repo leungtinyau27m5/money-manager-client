@@ -1,19 +1,25 @@
-import { Box, styled, Typography, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, styled } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
 import TypesSection from "src/drawer/TypesSelection";
-import { useState } from "react";
 import { expenseTypes } from "src/constants/types";
+import Calculator from "src/components/calculator";
 
-const StyledForm = styled(Box)(() => ({
+const StyledForm = styled(Box)(({ theme }) => ({
   display: "flex",
   width: "100%",
   flexDirection: "column",
   padding: 12,
   rowGap: 8,
+  [theme.breakpoints.up("md")]: {
+    maxWidth: theme.pageMaxWidth,
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
   "& > .row-item": {
     display: "grid",
     width: "100%",
@@ -40,6 +46,12 @@ const StyledForm = styled(Box)(() => ({
 const ExpenseForm = () => {
   const { control, setValue } = useForm<ExpenseFormState>();
   const [showTypeSelection, setShowTypeSelection] = useState(false);
+  const [showCaltor, setShowCaltor] = useState(false);
+
+  const handleResult = (value: string) => {
+    setValue("money", value);
+  };
+
   return (
     <StyledForm component="form">
       <Box className="row-item">
@@ -106,6 +118,7 @@ const ExpenseForm = () => {
                 variant="filled"
                 className="no-label"
                 disabled={true}
+                onClick={() => setShowCaltor(true)}
                 InputProps={{
                   disableUnderline: true,
                 }}
@@ -138,6 +151,11 @@ const ExpenseForm = () => {
         open={showTypeSelection}
         onClose={() => setShowTypeSelection(false)}
         itemList={expenseTypes}
+      />
+      <Calculator
+        open={showCaltor}
+        onClose={() => setShowCaltor(false)}
+        handleResult={handleResult}
       />
     </StyledForm>
   );
