@@ -61,22 +61,6 @@ const DashboardPage = () => {
   const transData = useRecoilValue(
     transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
   );
-  const dataByDate = useMemo(() => {
-    const days = new Date(dateObj.year, dateObj.month, 0).getDate();
-    const data = {} as { [key: number]: TransRow[] };
-    const arr = [...transData];
-    for (let i = 1; i <= days; i++) {
-      data[i] = [];
-      for (let j = 0; j < arr.length; j++) {
-        if (arr[j].date === i) {
-          const temp = arr.splice(j, 1);
-          data[i] = data[i].concat(...temp);
-          j--;
-        }
-      }
-    }
-    return data;
-  }, [dateObj.month, dateObj.year, transData]);
 
   const handleOnChange = (year: number, month: number) => {
     setDateObj({
@@ -86,7 +70,7 @@ const DashboardPage = () => {
     setDateAtom(new Date(`${year}/${month + 1}`));
   };
 
-  console.log(dataByDate);
+  console.log(transData);
 
   return (
     <StyledDashboardPage className="page-inner has-app-bar has-bottom-nav min-scrollbar">

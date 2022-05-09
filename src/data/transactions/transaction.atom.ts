@@ -15,28 +15,32 @@ export const transAtom = atom<{ [date: string]: TransRow[] }>({
   default: {},
 });
 
-export const transSelectorByDate = selectorFamily<TransRow[], string>({
+export const transSelectorByDate = selectorFamily<
+  { [date: number]: TransRow[] },
+  string
+>({
   key: "transSelectorByDate",
   get:
     (date) =>
     ({ get }) => {
       const raw = get(transAtom);
-      if (raw[date]) return raw[date];
-      return [];
-    },
-  set:
-    (date) =>
-    ({ set }, newValue) => {
-      if (newValue instanceof DefaultValue) {
-        set(transAtom, (state) => ({
-          ...state,
-          [date]: [],
-        }));
-        return;
+      if (Array.isArray(raw[date])) {
+        const [year, month] = date.split("-");
+        const days = new Date(Number(year), Number(month), 0).getDate();
+        const data = {} as { [key: number]: TransRow[] };
+        const arr = [...raw[date]];
+        for (let i = days; i >= 1; i--) {
+          data[i] = [];
+          for (let j = 0; j < arr.length; j++) {
+            if (arr[j].date === i) {
+              const temp = arr.splice(j, 1);
+              data[i] = data[i].concat(...temp);
+              j--;
+            }
+          }
+        }
+        return data;
       }
-      set(transAtom, (state) => ({
-        ...state,
-        [date]: newValue,
-      }));
+      return {};
     },
 });
