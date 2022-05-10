@@ -14,6 +14,7 @@ const StyledBottomNavBar = styled(Box)(({ theme }) => ({
   width: "100%",
   display: "flex",
   boxShadow: "0px -2px 5px 2px rgba(15, 15, 15, 0.15)",
+  backgroundColor: 'white',
   [theme.breakpoints.up("md")]: {
     maxWidth: theme.pageMaxWidth,
   },

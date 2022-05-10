@@ -1,5 +1,5 @@
 import { useState, SyntheticEvent, useRef, useMemo } from "react";
-import { Box, styled, ButtonBase, Tabs, Tab } from "@mui/material";
+import { Box, styled, ButtonBase, Tabs, Tab, Typography } from "@mui/material";
 import {
   addLeadingZero,
   currencyToNumber,
@@ -27,6 +27,13 @@ const StyledChartPage = styled(Box)(({ theme }) => ({
   },
   "& > .panel-wrapper": {
     padding: 8,
+    "& .no-data-chart": {
+      height: 80,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      width: '100%'
+    },
   },
 }));
 
@@ -44,7 +51,7 @@ const ChartPage = () => {
   const expenseRows = useMemo(() => {
     return Object.values(transData).reduce((arr, ele) => {
       ele.forEach((item) => {
-        if (item.type === "expense") arr.push(...ele);
+        if (item.type === "expense") arr.push(item);
       });
       return arr;
     }, []);
@@ -52,7 +59,7 @@ const ChartPage = () => {
   const incomeRows = useMemo(() => {
     return Object.values(transData).reduce((arr, ele) => {
       ele.forEach((item) => {
-        if (item.type === "income") arr.push(...ele);
+        if (item.type === "income") arr.push(item);
       });
       return arr;
     }, []);
@@ -118,18 +125,32 @@ const ChartPage = () => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            {expenseRows.length > 0 && (
-              <Box className="section" sx={{ display: "flex", width: "100%" }}>
+            <Box
+              className="section"
+              sx={{ display: "flex", width: "100%", paddingBottom: 1 }}
+            >
+              {expenseRows.length > 0 ? (
                 <MyNightingaleChart data={expenseRows} sum={totalExpense} />
-              </Box>
-            )}
+              ) : (
+                <Box className="no-data-chart">
+                  <Typography align="center">沒有資料...</Typography>
+                </Box>
+              )}
+            </Box>
           </SwiperSlide>
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            {incomeRows.length > 0 && (
-              <Box className="section" sx={{ display: "flex", width: "100%" }}>
+            <Box
+              className="section"
+              sx={{ display: "flex", width: "100%", paddingBottom: 1 }}
+            >
+              {incomeRows.length > 0 ? (
                 <MyNightingaleChart data={incomeRows} sum={totalIncome} />
-              </Box>
-            )}
+              ) : (
+                <Box className="no-data-chart">
+                  <Typography align="center">沒有資料...</Typography>
+                </Box>
+              )}
+            </Box>
           </SwiperSlide>
         </SwiperView>
       </Box>

@@ -28,7 +28,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   },
   "& .trans-board-body": {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column-reverse",
     padding: 6,
     "& > .transaction-item": {
       "&:not(:last-of-type)": {},

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { UIEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   ButtonBase,
@@ -44,37 +44,49 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
 const StyledDashboardPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
+  "&.scrolled": {
+    "& > .header": {
+      backgroundColor: "white",
+    },
+  },
   "& > .header": {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     padding: theme.spacing(1),
+    flexDirection: "column",
+    position: "sticky",
+    top: 0,
+    left: 0,
+    zIndex: 1,
+    transition: 'all .3s ease-in-out',
     "& > .date-wrapper": {
       fontSize: "1.1rem",
       fontWeight: "bold",
     },
-  },
-  "& > .subtotal-board": {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    padding: `${theme.spacing(1.5)} ${theme.spacing(1)}`,
-    "& > *": {
-      flexGrow: 1,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-around",
-      flexDirection: "column",
-      position: "relative",
-      "&:not(:last-of-type)": {
-        "&::after": {
-          content: "''",
-          position: "absolute",
-          top: "50%",
-          right: 0,
-          width: 2,
-          height: "50%",
-          backgroundColor: "grey",
-          transform: "translateY(-50%)",
+    "& > .subtotal-board": {
+      display: "grid",
+      gridTemplateColumns: "repeat(3, 1fr)",
+      padding: `${theme.spacing(1.5)} ${theme.spacing(1)}`,
+      width: "100%",
+      "& > *": {
+        flexGrow: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-around",
+        flexDirection: "column",
+        position: "relative",
+        "&:not(:last-of-type)": {
+          "&::after": {
+            content: "''",
+            position: "absolute",
+            top: "50%",
+            right: 0,
+            width: 2,
+            height: "50%",
+            backgroundColor: "grey",
+            transform: "translateY(-50%)",
+          },
         },
       },
     },
@@ -95,6 +107,7 @@ const DashboardPage = () => {
   });
   const defaultDate = useRef(new Date());
   const modifyTarget = useRef<TransRow | null>(null);
+  const me = useRef<HTMLDivElement>(null);
   const transData = useRecoilValue(
     transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
   );
@@ -133,50 +146,75 @@ const DashboardPage = () => {
     setShowModify(true);
   };
 
+  useLayoutEffect(() => {
+    const divEle = me.current;
+    if (!divEle) return;
+    const handleScroll = (evt: Event) => {
+      const target = evt.target as HTMLDivElement;
+      // const maxScrollHeight = target.scrollHeight - target.offsetHeight;
+      if (target.scrollTop > 50) {
+        divEle.classList.add("scrolled");
+      } else {
+        divEle.classList.remove("scrolled");
+      }
+    };
+    divEle.addEventListener("scroll", handleScroll);
+    return () => {
+      divEle.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <StyledDashboardPage className="page-inner has-app-bar has-bottom-nav min-scrollbar">
+    <StyledDashboardPage
+      className="page-inner has-app-bar has-bottom-nav min-scrollbar"
+      ref={me}
+    >
       <Box className="header">
         <ButtonBase
           onClick={() => setShowYearMonthPicker(true)}
-          sx={{ height: "100%", justifyContent: "flex-start" }}
+          sx={{
+            height: "100%",
+            justifyContent: "flex-start",
+            alignSelf: "flex-start",
+          }}
           className="date-wrapper"
         >
           {dateObj.year} / {addLeadingZero(dateObj.month + 1)}
           <KeyboardArrowDownRoundedIcon />
         </ButtonBase>
-      </Box>
-      <Box className="subtotal-board section">
-        <Box
-          className="income"
-          sx={{ color: (theme) => theme.palette.success.main }}
-        >
-          <Typography variant="caption">收入</Typography>
-          <ResponsiveTextBox
-            str={`$${formatCurrencyWithPlaces(totalIncome)}`}
-          />
-        </Box>
-        <Box
-          className="expense"
-          sx={{ color: (theme) => theme.palette.error.main }}
-        >
-          <Typography variant="caption">支出</Typography>
-          <ResponsiveTextBox
-            str={`$${formatCurrencyWithPlaces(totalExpense)}`}
-          />
-        </Box>
-        <Box
-          className="balance"
-          sx={{
-            color: (theme) =>
-              totalIncome - totalExpense >= 0
-                ? theme.palette.success.main
-                : theme.palette.error.main,
-          }}
-        >
-          <Typography variant="caption">結餘</Typography>
-          <ResponsiveTextBox
-            str={`$${formatCurrencyWithPlaces(totalIncome - totalExpense)}`}
-          />
+        <Box className="subtotal-board section">
+          <Box
+            className="income"
+            sx={{ color: (theme) => theme.palette.success.main }}
+          >
+            <Typography variant="caption">收入</Typography>
+            <ResponsiveTextBox
+              str={`$${formatCurrencyWithPlaces(totalIncome)}`}
+            />
+          </Box>
+          <Box
+            className="expense"
+            sx={{ color: (theme) => theme.palette.error.main }}
+          >
+            <Typography variant="caption">支出</Typography>
+            <ResponsiveTextBox
+              str={`$${formatCurrencyWithPlaces(totalExpense)}`}
+            />
+          </Box>
+          <Box
+            className="balance"
+            sx={{
+              color: (theme) =>
+                totalIncome - totalExpense >= 0
+                  ? theme.palette.success.main
+                  : theme.palette.error.main,
+            }}
+          >
+            <Typography variant="caption">結餘</Typography>
+            <ResponsiveTextBox
+              str={`$${formatCurrencyWithPlaces(totalIncome - totalExpense)}`}
+            />
+          </Box>
         </Box>
       </Box>
       <Box className="data-container">

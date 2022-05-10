@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as echarts from "echarts/core";
 import { PieChart, PieSeriesOption } from "echarts/charts";
 import {
@@ -10,9 +10,9 @@ import {
 } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { ECharts } from "echarts/core";
+import { LabelLayout } from "echarts/features";
 import { TransRow } from "src/data/transactions/transaction.atom";
 import { currencyToNumber, formatCurrencyWithPlaces } from "src/helpers/common";
-import { LabelLayout } from "echarts/features";
 
 echarts.use([
   ToolboxComponent,
@@ -30,10 +30,18 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
   const { data, sum } = props;
   const me = useRef<HTMLDivElement>(null);
   const echartRef = useRef<ECharts | null>(null);
+  const names = useMemo(() => {
+    return data.reduce((arr, ele) => {
+      if (!arr.includes(ele.title)) arr.push(ele.title);
+      return arr;
+    }, [] as string[]);
+  }, [data]);
   const optionsRef = useRef<MyNightingaleCharOption>({
     legend: {
-      top: 20,
+      top: 10,
+      align: "auto",
     },
+    textStyle: {},
     toolbox: {
       feature: {
         restore: {},
@@ -42,11 +50,11 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
     series: [
       {
         type: "pie",
-        radius: [60, 75],
-        center: ["50%", "50%"],
+        radius: ["15%", "45%"],
+        center: ["50%", "60%"],
         roseType: "area",
         itemStyle: {
-          borderRadius: 8,
+          borderRadius: 5,
         },
         label: {
           formatter: (param) =>
@@ -57,7 +65,7 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
             } \n {b|${param.percent}%}`,
           rich: {
             a: {
-              fontSize: "10px",
+              fontSize: "12px",
             },
             b: {
               align: "right",
@@ -81,23 +89,32 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
     const newSeries = Array.isArray(optionsRef.current.series)
       ? [...optionsRef.current.series]
       : [];
+    const obj = {} as { [name: string]: number };
+    data.forEach((ele) => {
+      if (!(ele.title in obj)) {
+        obj[ele.title] = 0;
+      }
+      obj[ele.title] += currencyToNumber(ele.money);
+    });
     newSeries[0] = {
       ...newSeries[0],
-      data: data.map((ele) => ({
-        name: ele.title,
-        value: currencyToNumber(ele.money),
-      })),
+      data: Object.entries(obj).map(([key, value]) => ({ name: key, value })),
     };
     optionsRef.current = {
       ...optionsRef.current,
       legend: {
         ...optionsRef.current.legend,
         formatter: (name) => {
-          const count = data.reduce(
-            (total, ele) => (total += currencyToNumber(ele.money)),
-            0
-          );
-          return `${name} \n${(count * 100 / sum).toFixed(2)}%`;
+          const count = data.reduce((total, ele) => {
+            if (ele.title === name) total += currencyToNumber(ele.money);
+            return total;
+          }, 0);
+          return `${name} \n${((count * 100) / sum).toFixed(2)}%`;
+        },
+        textStyle: {
+          fontFamily: "Noto Sans TC",
+          color: "#000",
+          fontWeight: 500,
         },
       },
       series: newSeries,
@@ -121,7 +138,7 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
       ref={me}
       sx={{
         width: "100%",
-        height: 320,
+        height: 150 + Math.ceil(names.length / 4) * 115,
         display: "flex",
         justifyContent: "center",
       }}
