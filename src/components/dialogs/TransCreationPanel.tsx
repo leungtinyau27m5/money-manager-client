@@ -9,6 +9,7 @@ import {
   Tab,
   Tabs,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import { Swiper as SwiperView, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -86,6 +87,7 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
           <IconButton edge="start" color="inherit" onClick={onClose}>
             <ArrowBackIosRoundedIcon />
           </IconButton>
+          <Typography>新增</Typography>
         </Toolbar>
       </AppBar>
       <Box className="panel-wrapper">

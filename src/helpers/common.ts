@@ -21,3 +21,11 @@ export const dayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const currencyToNumber = (val: string) => {
   return Number(val.replace(/,/g, ""));
 };
+
+export const isThisMonth = (date: Date) => {
+  const month = new Date().getMonth();
+  const year = new Date().getFullYear();
+  const days = new Date(year, month + 1, 0).getDate();
+  const diff = Math.abs(new Date().getTime() - date.getTime());
+  return diff / (1000 * 60 * 60 * 24 * days) <= 0;
+};

@@ -13,7 +13,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   "& .trans-board-head": {
-    padding: "4px 2px",
+    padding: "4px 4px",
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
     alignItems: "center",
@@ -29,7 +29,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   "& .trans-board-body": {
     display: "flex",
     flexDirection: "column",
-    padding: "4px 12px",
+    padding: 6,
     "& > .transaction-item": {
       "&:not(:last-of-type)": {},
     },

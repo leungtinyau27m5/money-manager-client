@@ -1,4 +1,4 @@
-import { atom, selectorFamily, DefaultValue } from "recoil";
+import { atom, selectorFamily, DefaultValue, selector } from "recoil";
 
 export interface TransRow {
   money: string;
@@ -26,7 +26,7 @@ export const transSelectorByDate = selectorFamily<
       const raw = get(transAtom);
       if (Array.isArray(raw[date])) {
         const [year, month] = date.split("-");
-        const days = new Date(Number(year), Number(month), 0).getDate();
+        const days = new Date(Number(year), Number(month) + 1, 0).getDate();
         const data = {} as { [key: number]: TransRow[] };
         const arr = [...raw[date]];
         for (let i = days; i >= 1; i--) {

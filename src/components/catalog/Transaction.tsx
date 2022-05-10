@@ -7,15 +7,17 @@ const StyledListItemButton = styled(ListItemButton)(() => ({
   columnGap: 16,
   paddingTop: 12,
   paddingBottom: 12,
-  paddingLeft: 0,
-  paddingRight: 0,
+  paddingLeft: 8,
+  paddingRight: 8,
   borderRadius: 5,
   gridTemplateColumns: "repeat(3, 1fr)",
   "& > .item-icon": {
     display: "flex",
     columnGap: 8,
   },
-  "& > .item-money": {},
+  "& > .item-money": {
+    display: "flex",
+  },
 }));
 
 export const Transaction = (props: TransactionProps) => {
@@ -36,7 +38,7 @@ export const Transaction = (props: TransactionProps) => {
         className="item-money"
         sx={{
           color: (theme) => theme.palette.success.main,
-          textAlign: "center",
+          justifyContent: "center",
         }}
       >
         <ResponsiveTextBox str={type === "income" ? `$${money}` : ""} />
@@ -45,7 +47,7 @@ export const Transaction = (props: TransactionProps) => {
         className="item-money"
         sx={{
           color: (theme) => theme.palette.error.main,
-          textAlign: "right",
+          justifyContent: "flex-end",
         }}
       >
         <ResponsiveTextBox str={type === "expense" ? `$${money}` : ""} />

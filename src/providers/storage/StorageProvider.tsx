@@ -42,7 +42,7 @@ const StorageProvider = (props: StorageProviderProps) => {
       ...state,
       [key]: rows,
     }));
-    const result = await store.setItem(key, response);
+    const result = await store.setItem(key, rows);
     return result;
   };
 
@@ -58,6 +58,8 @@ const StorageProvider = (props: StorageProviderProps) => {
       ...state,
       [key]: rows,
     }));
+    const result = await store.setItem(key, rows);
+    return result;
   };
 
   useEffect(() => {

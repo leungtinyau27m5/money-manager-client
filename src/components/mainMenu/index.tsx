@@ -20,6 +20,7 @@ import CategoryRoundedIcon from "@mui/icons-material/CategoryRounded";
 import PermDataSettingRoundedIcon from "@mui/icons-material/PermDataSettingRounded";
 import ExitToAppRoundedIcon from "@mui/icons-material/ExitToAppRounded";
 import GetAppRoundedIcon from "@mui/icons-material/GetAppRounded";
+import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   [`& .${paperClasses.root}`]: {
@@ -69,10 +70,18 @@ const MainMenu = () => {
       </Box>
       <Box className="menu-body">
         <List>
+          <Link to="/dashboard" onClick={handleNavItemOnClick}>
+            <ListItemButton>
+              <ListItemIcon>
+                <DashboardCustomizeRoundedIcon sx={{ color: "blueviolet" }} />
+              </ListItemIcon>
+              <ListItemText>主頁</ListItemText>
+            </ListItemButton>
+          </Link>
           <Link to="/dashboard/chart" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
-                <PieChartRoundedIcon sx={{ color: "blueviolet" }} />
+                <PieChartRoundedIcon sx={{ color: "#20C046" }} />
               </ListItemIcon>
               <ListItemText>圖表</ListItemText>
             </ListItemButton>

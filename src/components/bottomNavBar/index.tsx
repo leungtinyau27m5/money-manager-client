@@ -78,7 +78,7 @@ const BottomNavBar = () => {
             active: location.pathname.match("/dashboard/chart"),
           })}
         >
-          <PieChartRoundedIcon sx={{ color: "blueviolet" }} />
+          <PieChartRoundedIcon sx={{ color: "#20C046" }} />
           <Box component="span" className="label">
             圖表
           </Box>

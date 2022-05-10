@@ -3,7 +3,7 @@ import { Box, styled } from "@mui/material";
 
 const StyledBox = styled(Box)(() => ({
   fontSize: 12,
-  width: "100%",
+  width: "fit-content",
   textAlign: "center",
 }));
 

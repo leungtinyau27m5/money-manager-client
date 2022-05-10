@@ -1,7 +1,126 @@
-import { Box } from "@mui/material";
+import { useState, SyntheticEvent, useRef, useMemo } from "react";
+import { Box, styled, ButtonBase, Tabs, Tab } from "@mui/material";
+import {
+  addLeadingZero,
+  currencyToNumber,
+  formatCurrencyWithPlaces,
+} from "src/helpers/common";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import { Swiper as SwiperView, SwiperSlide } from "swiper/react";
+import type { Swiper } from "swiper";
+import "swiper/css";
+import MyNightingaleChart from "src/components/charts/MyNightingaleChart";
+import { useRecoilValue } from "recoil";
+import { transSelectorByDate } from "src/data/transactions/transaction.atom";
+
+const StyledChartPage = styled(Box)(({ theme }) => ({
+  backgroundColor: "whitesmoke",
+  "& > .header": {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: theme.spacing(1),
+    "& > .date-wrapper": {
+      fontSize: "1.1rem",
+      fontWeight: "bold",
+    },
+  },
+  "& > .panel-wrapper": {
+    padding: 8,
+  },
+}));
 
 const ChartPage = () => {
-  return <Box></Box>;
+  const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
+  const [activePanel, setActivePanel] = useState(0);
+  const [dateObj, setDateObj] = useState({
+    year: new Date().getFullYear(),
+    month: new Date().getMonth(),
+  });
+  const swiperRef = useRef<Swiper | null>(null);
+  const transData = useRecoilValue(
+    transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
+  );
+  const totalIncome = useMemo(() => {
+    return Object.values(transData).reduce((total, ele) => {
+      ele.forEach((item) => {
+        if (item.type === "income") total += currencyToNumber(item.money);
+      });
+      return total;
+    }, 0);
+  }, [transData]);
+  const totalExpense = useMemo(() => {
+    return Object.values(transData).reduce((total, ele) => {
+      ele.forEach((item) => {
+        if (item.type === "expense") total += currencyToNumber(item.money);
+      });
+      return total;
+    }, 0);
+  }, [transData]);
+
+  const handleTabOnChange = (evt: SyntheticEvent, newValue: number) => {
+    setActivePanel(newValue);
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(newValue);
+    }
+  };
+
+  const hanldeSlideChange = (swiper: Swiper) => {
+    setActivePanel(swiper.activeIndex);
+  };
+
+  return (
+    <StyledChartPage className="page-inner has-app-bar has-bottom-nav min-scrollbar">
+      <Box className="header">
+        <ButtonBase
+          onClick={() => setShowYearMonthPicker(true)}
+          sx={{ height: "100%", justifyContent: "flex-start" }}
+          className="date-wrapper"
+        >
+          {dateObj.year} / {addLeadingZero(dateObj.month + 1)}
+          <KeyboardArrowDownRoundedIcon />
+        </ButtonBase>
+      </Box>
+      <Box className="panel-wrapper">
+        <Tabs
+          value={activePanel}
+          onChange={handleTabOnChange}
+          indicatorColor="primary"
+          textColor="inherit"
+          variant="fullWidth"
+        >
+          <Tab
+            label={
+              <Box sx={{ color: (theme) => theme.palette.error.main }}>
+                支出 $${formatCurrencyWithPlaces(totalExpense)}
+              </Box>
+            }
+          />
+          <Tab
+            label={
+              <Box sx={{ color: (theme) => theme.palette.success.main }}>
+                收入 $${formatCurrencyWithPlaces(totalIncome)}
+              </Box>
+            }
+          />
+        </Tabs>
+        <SwiperView
+          slidesPerView={1}
+          onSlideChange={hanldeSlideChange}
+          onSwiper={(swiper) => (swiperRef.current = swiper)}
+        >
+          <SwiperSlide style={{ width: "100vw", display: "flex" }}>
+            <Box className="section" sx={{ display: "flex", width: "100%" }}>
+              <MyNightingaleChart data={transData} />
+            </Box>
+          </SwiperSlide>
+          <SwiperSlide
+            style={{ width: "100vw", display: "flex" }}
+          ></SwiperSlide>
+        </SwiperView>
+      </Box>
+    </StyledChartPage>
+  );
 };
 
 export default ChartPage;

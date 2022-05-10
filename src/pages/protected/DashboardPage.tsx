@@ -129,7 +129,8 @@ const DashboardPage = () => {
   };
 
   const handleTransactionOnClick = (data: TransRow) => {
-    setShowModify(true)
+    modifyTarget.current = data;
+    setShowModify(true);
   };
 
   return (
@@ -165,7 +166,12 @@ const DashboardPage = () => {
         </Box>
         <Box
           className="balance"
-          sx={{ color: (theme) => theme.palette.error.main }}
+          sx={{
+            color: (theme) =>
+              totalIncome - totalExpense >= 0
+                ? theme.palette.success.main
+                : theme.palette.error.main,
+          }}
         >
           <Typography variant="caption">結餘</Typography>
           <ResponsiveTextBox
@@ -219,6 +225,7 @@ const DashboardPage = () => {
             open={showModify}
             onClose={() => setShowModify(false)}
             target={modifyTarget.current}
+            currentKey={`${dateObj.year}-${dateObj.month}`}
           />
         )}
       </StorageCtx.Consumer>
