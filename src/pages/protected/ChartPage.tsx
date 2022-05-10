@@ -12,6 +12,7 @@ import "swiper/css";
 import MyNightingaleChart from "src/components/charts/MyNightingaleChart";
 import { useRecoilValue } from "recoil";
 import { transSelectorByDate } from "src/data/transactions/transaction.atom";
+import MyBarChart from "src/components/charts/MyBarChart";
 
 const StyledChartPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -32,7 +33,7 @@ const StyledChartPage = styled(Box)(({ theme }) => ({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      width: '100%'
+      width: "100%",
     },
   },
 }));
@@ -124,10 +125,24 @@ const ChartPage = () => {
           onSlideChange={hanldeSlideChange}
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
-          <SwiperSlide style={{ width: "100vw", display: "flex" }}>
+          <SwiperSlide
+            style={{
+              width: "100vw",
+              display: "flex",
+              flexDirection: "column",
+              boxSizing: "border-box",
+              padding: 8,
+              rowGap: 12,
+            }}
+          >
             <Box
               className="section"
-              sx={{ display: "flex", width: "100%", paddingBottom: 1 }}
+              sx={{
+                display: "flex",
+                width: "100%",
+                paddingBottom: 1,
+                margin: 0,
+              }}
             >
               {expenseRows.length > 0 ? (
                 <MyNightingaleChart data={expenseRows} sum={totalExpense} />
@@ -138,7 +153,16 @@ const ChartPage = () => {
               )}
             </Box>
           </SwiperSlide>
-          <SwiperSlide style={{ width: "100vw", display: "flex" }}>
+          <SwiperSlide
+            style={{
+              width: "100vw",
+              display: "flex",
+              flexDirection: "column",
+              boxSizing: "border-box",
+              padding: 8,
+              rowGap: 12,
+            }}
+          >
             <Box
               className="section"
               sx={{ display: "flex", width: "100%", paddingBottom: 1 }}
