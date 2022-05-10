@@ -1,32 +1,55 @@
-import { Box, styled } from "@mui/material";
+import { Box, ListItemButton, styled } from "@mui/material";
+import { TransRow } from "src/data/transactions/transaction.atom";
+import ResponsiveTextBox from "../text/ResponsiveTextBox";
 
-const StyledBox = styled(Box)(() => ({
-  display: "flex",
-  columnGap: 8,
-  "& > .item-money": {
-    flex: 1,
+const StyledListItemButton = styled(ListItemButton)(() => ({
+  display: "grid",
+  columnGap: 16,
+  paddingTop: 12,
+  paddingBottom: 12,
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderRadius: 5,
+  gridTemplateColumns: "repeat(3, 1fr)",
+  "& > .item-icon": {
+    display: "flex",
+    columnGap: 8,
   },
+  "& > .item-money": {},
 }));
 
 export const Transaction = (props: TransactionProps) => {
-  const { icon, title, money } = props;
+  const { iconKey, title, money, type } = props;
   return (
-    <StyledBox className="transaction-item">
+    <StyledListItemButton className="transaction-item">
       <Box className="item-icon">
-        <Box component="span" className="material-icons-rounded">
-          {icon}
+        <Box component="span" className="material-icons-round">
+          {iconKey}
         </Box>
+        <Box className="title">{title}</Box>
       </Box>
-      <Box className="item-title">{title}</Box>
-      <Box className="item-money">{money}</Box>
-    </StyledBox>
+      <Box
+        className="item-money"
+        sx={{
+          color: (theme) => theme.palette.success.main,
+          textAlign: "center",
+        }}
+      >
+        <ResponsiveTextBox str={type === "income" ? `$${money}` : ""} />
+      </Box>
+      <Box
+        className="item-money"
+        sx={{
+          color: (theme) => theme.palette.error.main,
+          textAlign: "right",
+        }}
+      >
+        <ResponsiveTextBox str={type === "expense" ? `$${money}` : ""} />
+      </Box>
+    </StyledListItemButton>
   );
 };
 
-export interface TransactionProps {
-  icon: string;
-  title: string;
-  money: number;
-}
+export interface TransactionProps extends TransRow {}
 
 export default Transaction;

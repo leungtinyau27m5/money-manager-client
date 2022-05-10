@@ -1,7 +1,6 @@
 import {
   forwardRef,
   ReactElement,
-  ReactNode,
   Ref,
   SyntheticEvent,
   useRef,
@@ -9,8 +8,9 @@ import {
 } from "react";
 import {
   AppBar,
+  Backdrop,
   Box,
-  BoxProps,
+  CircularProgress,
   Dialog,
   IconButton,
   Slide,
@@ -25,10 +25,11 @@ import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import type { Swiper } from "swiper";
 import ExpenseForm from "../forms/ExpenseForm";
 import IncomeForm from "../forms/IncomeForm";
-import { StorageCtx, StorageCtxState } from "src/providers/storage/context";
-import { transAtom, TransRow } from "src/data/transactions/transaction.atom";
+import { StorageCtxState } from "src/providers/storage/context";
+import { transAtom } from "src/data/transactions/transaction.atom";
 import { useSetRecoilState } from "recoil";
 import { v4 as uuidv4 } from "uuid";
+import { useSnackbar } from "notistack";
 
 const Transition = forwardRef(
   (
@@ -41,32 +42,11 @@ const Transition = forwardRef(
   }
 );
 
-const TabPanel = (
-  props: {
-    value: number;
-    index: number;
-    children?: ReactNode;
-    dir?: string;
-  } & BoxProps
-) => {
-  const { value, index, children, dir, ...otherBoxProps } = props;
-  return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`trans-creation-panel-${index}`}
-      aria-labelledby={`full-width-transaction-tab-${index}`}
-      {...otherBoxProps}
-    >
-      {value === index && <Box>{children}</Box>}
-    </Box>
-  );
-};
-
 const TransCreationPanel = (props: TransCreationPanelProps) => {
-  const { open, onClose, updateItems } = props;
-  const setTransData = useSetRecoilState(transAtom);
+  const { open, onClose, updateItems, defaultDate } = props;
+  const { enqueueSnackbar } = useSnackbar();
   const [activePanel, setActivePanel] = useState(0);
+  const [showLoader, setShowLoader] = useState(false);
   const swiperRef = useRef<Swiper | null>(null);
 
   const handleTabOnChange = (evt: SyntheticEvent, newValue: number) => {
@@ -84,7 +64,8 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
     const { date: dateObj, money, title, type, note, iconKey } = data;
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
-    const result = await updateItems(`${year}-${month}`, [
+    setShowLoader(true);
+    await updateItems(`${year}-${month}`, [
       {
         money,
         title,
@@ -94,17 +75,32 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
         date: dateObj.getDate(),
         id: uuidv4(),
       },
-    ]);
-    console.log(result);
-    onClose();
+    ])
+      .catch((error) => {
+        enqueueSnackbar("Update item fail, please retry", {
+          variant: "warning",
+        });
+      })
+      .finally(() => {
+        setShowLoader(false);
+        onClose();
+      });
   };
 
   return (
     <Dialog
-      fullScreen
+      fullWidth
       open={open}
       onClose={() => onClose()}
       TransitionComponent={Transition}
+      PaperProps={{
+        sx: {
+          margin: 0,
+          height: "100%",
+          width: "100%",
+          maxHeight: "none",
+        },
+      }}
     >
       <AppBar position="relative" color="secondary">
         <Toolbar>
@@ -130,13 +126,24 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            <ExpenseForm submitCallback={submitCallback} />
+            <ExpenseForm
+              submitCallback={submitCallback}
+              defaultDate={defaultDate}
+            />
           </SwiperSlide>
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
             <IncomeForm submitCallback={submitCallback} />
           </SwiperSlide>
         </SwiperView>
       </Box>
+      <Backdrop
+        open={showLoader}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
+        <CircularProgress />
+      </Backdrop>
     </Dialog>
   );
 };
@@ -145,6 +152,7 @@ export interface TransCreationPanelProps {
   open: boolean;
   updateItems: StorageCtxState["updateItems"];
   onClose: () => void;
+  defaultDate?: Date;
 }
 
 export type SubmitCallbackHandler = (data: {

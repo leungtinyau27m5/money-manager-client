@@ -1,4 +1,5 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 import { useRoutes } from "react-router-dom";
 import StorageProvider from "./providers/storage/StorageProvider";
 import myRoutes from "./utils/router";
@@ -9,7 +10,16 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <StorageProvider>{routes}</StorageProvider>
+      <SnackbarProvider
+        maxSnack={5}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        autoHideDuration={3500}
+      >
+        <StorageProvider>{routes}</StorageProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };

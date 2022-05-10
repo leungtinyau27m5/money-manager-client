@@ -15,3 +15,9 @@ export const formatCurrencyWithPlaces = (number = 0, place = 2) => {
   arr[0] = arr[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   return arr.join(".");
 };
+
+export const dayName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export const currencyToNumber = (val: string) => {
+  return Number(val.replace(/,/g, ""));
+};

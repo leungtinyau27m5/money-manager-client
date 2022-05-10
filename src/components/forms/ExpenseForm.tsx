@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Button, styled } from "@mui/material";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
-import TypesSection from "src/drawer/TypesSelection";
+import TypesSection from "src/components/drawer/TypesSelection";
 import { expenseTypes, ItemTypes } from "src/constants/types";
 import Calculator from "src/components/calculator";
 import { formatCurrencyWithPlaces } from "src/helpers/common";
@@ -46,7 +46,7 @@ const StyledForm = styled(Box)(({ theme }) => ({
 }));
 
 const ExpenseForm = (props: ExpenseFormProps) => {
-  const { submitCallback } = props;
+  const { submitCallback, defaultDate } = props;
   const { control, setValue, handleSubmit } = useForm<ExpenseFormState>();
   const [showTypeSelection, setShowTypeSelection] = useState(false);
   const [showCaltor, setShowCaltor] = useState(false);
@@ -58,7 +58,7 @@ const ExpenseForm = (props: ExpenseFormProps) => {
 
   const handleTypeSelect = (type: ItemTypes) => {
     setValue("title", type.text);
-    setValue("iconKey", type.key);
+    setValue("iconKey", type.icon);
   };
 
   const handleFormSubmit: SubmitHandler<ExpenseFormState> = (evt) => {
@@ -77,7 +77,7 @@ const ExpenseForm = (props: ExpenseFormProps) => {
             <Controller
               control={control}
               name="date"
-              defaultValue={new Date()}
+              defaultValue={defaultDate || new Date()}
               rules={{
                 required: true,
               }}
@@ -238,6 +238,7 @@ export interface ExpenseFormState {
 
 export interface ExpenseFormProps {
   submitCallback: SubmitCallbackHandler;
+  defaultDate?: Date;
 }
 
 export default ExpenseForm;

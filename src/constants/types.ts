@@ -97,7 +97,7 @@ export const expenseTypes = [
   },
   {
     key: "debt",
-    icon: "payments",
+    icon: "attach_money",
     text: "供款",
   },
 ];
@@ -105,7 +105,7 @@ export const expenseTypes = [
 export const incomeTypes = [
   {
     key: "salary",
-    icon: "payments",
+    icon: "monetization_on",
     text: "薪金",
   },
   {

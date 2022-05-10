@@ -5,7 +5,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
-import TypesSection from "src/drawer/TypesSelection";
+import TypesSection from "src/components/drawer/TypesSelection";
 import { expenseTypes, incomeTypes, ItemTypes } from "src/constants/types";
 import Calculator from "src/components/calculator";
 import { formatCurrencyWithPlaces } from "src/helpers/common";
@@ -58,7 +58,7 @@ const IncomeForm = (props: IncomeFormProps) => {
 
   const handleTypeSelect = (type: ItemTypes) => {
     setValue("title", type.text);
-    setValue("iconKey", type.key);
+    setValue("iconKey", type.icon);
   };
 
   const handleFormSubmit: SubmitHandler<IncomeFormState> = (evt) => {

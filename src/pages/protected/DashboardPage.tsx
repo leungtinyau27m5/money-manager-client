@@ -1,16 +1,42 @@
-import { useMemo, useState } from "react";
-import { Box, ButtonBase, styled, Typography } from "@mui/material";
+import { useMemo, useRef, useState } from "react";
+import {
+  Box,
+  ButtonBase,
+  styled,
+  Typography,
+  IconButton,
+  alpha,
+} from "@mui/material";
 import YearMonthPicker from "src/components/myDatePicker/YearMonthPicker";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
-import { addLeadingZero, toCurrency } from "src/helpers/common";
+import {
+  addLeadingZero,
+  currencyToNumber,
+  formatCurrencyWithPlaces,
+} from "src/helpers/common";
 import ResponsiveTextBox from "src/components/text/ResponsiveTextBox";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { dateAtom } from "src/data/date/date.atom";
-import AddTransaction from "src/components/buttons/AddTransaction";
-import {
-  TransRow,
-  transSelectorByDate,
-} from "src/data/transactions/transaction.atom";
+import { transSelectorByDate } from "src/data/transactions/transaction.atom";
+import DateTransaction from "src/containers/transactionContainer/DateTransaction";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { StorageCtx } from "src/providers/storage/context";
+import TransCreationPanel from "src/components/dialogs/TransCreationPanel";
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: "#FFCF48",
+  color: "white",
+  position: "fixed",
+  bottom: 80,
+  left: 20,
+  boxShadow: "0px 0px 5px 2px rgba(15, 15, 15, 0.15)",
+  "&:hover": {
+    backgroundColor: alpha("#FFCF48", 0.75),
+  },
+  [theme.breakpoints.up("md")]: {
+    left: "calc((100vw - 600px) / 2 + 20px)",
+  },
+}));
 
 const StyledDashboardPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -49,18 +75,40 @@ const StyledDashboardPage = styled(Box)(({ theme }) => ({
       },
     },
   },
+  "& > .data-container": {
+    marginTop: theme.spacing(3.5),
+  },
 }));
 
 const DashboardPage = () => {
   const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
+  const [showPanel, setShowPanel] = useState(false);
   const setDateAtom = useSetRecoilState(dateAtom);
   const [dateObj, setDateObj] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
+  // const [defaultDate, setDefaultDate] = useState(new Date());
+  const defaultDate = useRef(new Date());
   const transData = useRecoilValue(
     transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
   );
+  const totalIncome = useMemo(() => {
+    return Object.values(transData).reduce((total, ele) => {
+      ele.forEach((item) => {
+        if (item.type === "income") total += currencyToNumber(item.money);
+      });
+      return total;
+    }, 0);
+  }, [transData]);
+  const totalExpense = useMemo(() => {
+    return Object.values(transData).reduce((total, ele) => {
+      ele.forEach((item) => {
+        if (item.type === "expense") total += currencyToNumber(item.money);
+      });
+      return total;
+    }, 0);
+  }, [transData]);
 
   const handleOnChange = (year: number, month: number) => {
     setDateObj({
@@ -70,7 +118,10 @@ const DashboardPage = () => {
     setDateAtom(new Date(`${year}/${month + 1}`));
   };
 
-  console.log(transData);
+  const toggleCreationByDate = (date: Date) => {
+    defaultDate.current = date;
+    setShowPanel(true);
+  };
 
   return (
     <StyledDashboardPage className="page-inner has-app-bar has-bottom-nav min-scrollbar">
@@ -90,22 +141,43 @@ const DashboardPage = () => {
           sx={{ color: (theme) => theme.palette.success.main }}
         >
           <Typography variant="caption">收入</Typography>
-          <ResponsiveTextBox str={`${toCurrency(397850)}`} />
+          <ResponsiveTextBox
+            str={`$${formatCurrencyWithPlaces(totalIncome)}`}
+          />
         </Box>
         <Box
           className="expense"
           sx={{ color: (theme) => theme.palette.error.main }}
         >
           <Typography variant="caption">支出</Typography>
-          <ResponsiveTextBox str={`${toCurrency(392.6)}`} />
+          <ResponsiveTextBox
+            str={`$${formatCurrencyWithPlaces(totalExpense)}`}
+          />
         </Box>
         <Box
           className="balance"
           sx={{ color: (theme) => theme.palette.error.main }}
         >
           <Typography variant="caption">結餘</Typography>
-          <ResponsiveTextBox str={`${toCurrency(-355551287.6)}`} />
+          <ResponsiveTextBox
+            str={`$${formatCurrencyWithPlaces(totalIncome - totalExpense)}`}
+          />
         </Box>
+      </Box>
+      <Box className="data-container">
+        {Object.entries(transData).map(
+          ([key, value]) =>
+            value.length > 0 && (
+              <DateTransaction
+                key={key}
+                year={dateObj.year}
+                month={dateObj.month}
+                date={key}
+                rows={value}
+                toggleCreationByDate={toggleCreationByDate}
+              />
+            )
+        )}
       </Box>
       <YearMonthPicker
         open={showYearMonthPicker}
@@ -116,7 +188,19 @@ const DashboardPage = () => {
           month: dateObj.month,
         }}
       />
-      <AddTransaction />
+      <StyledIconButton size="large" onClick={() => setShowPanel(true)}>
+        <AddRoundedIcon />
+      </StyledIconButton>
+      <StorageCtx.Consumer>
+        {({ updateItems }) => (
+          <TransCreationPanel
+            open={showPanel}
+            updateItems={updateItems}
+            onClose={() => setShowPanel(false)}
+            defaultDate={defaultDate.current}
+          />
+        )}
+      </StorageCtx.Consumer>
     </StyledDashboardPage>
   );
 };

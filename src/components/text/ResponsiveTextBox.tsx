@@ -15,10 +15,9 @@ const ResponsiveTextBox = (props: ResponsiveTextBoxProps) => {
     if (!me.current) return;
     if (!me.current.parentElement) return;
     const rect = me.current.parentElement.getBoundingClientRect();
-    const fontSize = rect.width / (str.length - 6);
+    const fontSize = Math.abs(rect.width / (str.length - 9));
     me.current.style.fontSize = 14 + "px";
     if (fontSize < 14) {
-      console.log(fontSize);
       me.current.style.transform = `scale(${fontSize / 14})`;
     } else {
       me.current.style.transform = "scale(1)";

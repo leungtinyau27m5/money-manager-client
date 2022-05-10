@@ -25,7 +25,7 @@ const StyledBox = styled(Box)(() => ({
   },
 }));
 
-const TypesSection = (props: TypesSectionProps) => {
+const TypesSelection = (props: TypesSelectionProps) => {
   const { open, onClose, itemList, handleTypeSelect } = props;
 
   const handleItemSelect = (ele: ItemTypes) => {
@@ -55,11 +55,11 @@ const TypesSection = (props: TypesSectionProps) => {
   );
 };
 
-export interface TypesSectionProps {
+export interface TypesSelectionProps {
   open: boolean;
   onClose: () => void;
   itemList: ItemTypes[];
   handleTypeSelect: (type: ItemTypes) => void;
 }
 
-export default TypesSection;
+export default TypesSelection;
