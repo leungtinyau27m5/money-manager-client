@@ -15,7 +15,7 @@ import { TransRow } from "src/data/transactions/transaction.atom";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { MyStyledTextField } from "./MyTextField";
 import { MyStyledSelect } from "./MySelect";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TypesSelection from "../drawer/TypesSelection";
 import { expenseTypes, incomeTypes, ItemTypes } from "src/constants/types";
 import Calculator from "../calculator";
@@ -58,7 +58,7 @@ const StyledForm = styled(Box)(({ theme }) => ({
 }));
 
 const ModifyForm = (props: ModifyFormProps) => {
-  const { defaultDate, data, modifySubmitCallback } = props;
+  const { data, modifySubmitCallback, defaultDate } = props;
   const { control, handleSubmit, watch, setValue } = useForm<ModifyFormState>();
   const typeWatch = watch("type", data.type);
   const [showTypeSelection, setShowTypeSelection] = useState(false);
@@ -88,6 +88,10 @@ const ModifyForm = (props: ModifyFormProps) => {
       date: date.getDate(),
     });
   };
+
+  useEffect(() => {
+    if (data.type !== typeWatch) setValue("title", "");
+  }, [data.type, setValue, typeWatch]);
 
   return (
     <StyledForm component="form" onSubmit={handleSubmit(handleOnSubmit)}>
@@ -134,7 +138,7 @@ const ModifyForm = (props: ModifyFormProps) => {
             <Controller
               control={control}
               name="date"
-              defaultValue={defaultDate || new Date()}
+              defaultValue={defaultDate}
               rules={{
                 required: true,
               }}
@@ -328,9 +332,9 @@ export interface ModifyFormState {
 }
 
 export interface ModifyFormProps {
-  defaultDate?: Date;
   data: TransRow;
   modifySubmitCallback: ModifySubmitCallback;
+  defaultDate: Date;
 }
 
 export default ModifyForm;

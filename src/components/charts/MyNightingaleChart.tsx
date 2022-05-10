@@ -2,28 +2,17 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Box } from "@mui/material";
 import * as echarts from "echarts/core";
 import { PieChart, PieSeriesOption } from "echarts/charts";
-import {
-  ToolboxComponent,
-  ToolboxComponentOption,
-  LegendComponent,
-  LegendComponentOption,
-} from "echarts/components";
+import { LegendComponent, LegendComponentOption } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { ECharts } from "echarts/core";
 import { LabelLayout } from "echarts/features";
 import { TransRow } from "src/data/transactions/transaction.atom";
 import { currencyToNumber, formatCurrencyWithPlaces } from "src/helpers/common";
 
-echarts.use([
-  ToolboxComponent,
-  LegendComponent,
-  PieChart,
-  CanvasRenderer,
-  LabelLayout,
-]);
+echarts.use([LegendComponent, PieChart, CanvasRenderer, LabelLayout]);
 
 type MyNightingaleCharOption = echarts.ComposeOption<
-  ToolboxComponentOption | LegendComponentOption | PieSeriesOption
+  LegendComponentOption | PieSeriesOption
 >;
 
 const MyNightingaleChart = (props: MyNightingaleChartProps) => {
@@ -40,12 +29,6 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
     legend: {
       top: 10,
       align: "auto",
-    },
-    textStyle: {},
-    toolbox: {
-      feature: {
-        restore: {},
-      },
     },
     series: [
       {

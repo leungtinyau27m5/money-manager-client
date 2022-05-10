@@ -13,20 +13,24 @@ import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import { TransRow } from "src/data/transactions/transaction.atom";
 import { StorageCtxState } from "src/providers/storage/context";
 import ModifyForm from "../forms/ModifyForm";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 const TranModifyPanel = (props: TranModifyPanelProps) => {
   const { removeItems, open, onClose, target, updateItems, currentKey } = props;
   const [showLoader, setShowLoader] = useState(false);
+  const dateObj = useMemo(() => {
+    const [year, month] = currentKey.split("-");
+    return new Date(+year, +month, target ? target.date : new Date().getDate());
+  }, [currentKey, target]);
 
   const submitCallback: ModifySubmitCallback = async (type, data) => {
-    setShowLoader(true)
+    setShowLoader(true);
     if (type === "update") {
       await updateItems(currentKey, [data]);
     } else if (type === "delete") {
       await removeItems(currentKey, [data.id]);
     }
-    setShowLoader(false)
+    setShowLoader(false);
     onClose();
   };
 
@@ -59,7 +63,11 @@ const TranModifyPanel = (props: TranModifyPanelProps) => {
       </AppBar>
       <Box className="panel-wrapper">
         {target && (
-          <ModifyForm data={target} modifySubmitCallback={submitCallback} />
+          <ModifyForm
+            data={target}
+            modifySubmitCallback={submitCallback}
+            defaultDate={dateObj}
+          />
         )}
       </Box>
       <Backdrop

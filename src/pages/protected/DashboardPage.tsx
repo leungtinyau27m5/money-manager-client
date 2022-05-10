@@ -1,4 +1,4 @@
-import { UIEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   ButtonBase,
@@ -59,7 +59,7 @@ const StyledDashboardPage = styled(Box)(({ theme }) => ({
     top: 0,
     left: 0,
     zIndex: 1,
-    transition: 'all .3s ease-in-out',
+    transition: "all .3s ease-in-out",
     "& > .date-wrapper": {
       fontSize: "1.1rem",
       fontWeight: "bold",
@@ -93,6 +93,8 @@ const StyledDashboardPage = styled(Box)(({ theme }) => ({
   },
   "& > .data-container": {
     marginTop: theme.spacing(3.5),
+    paddingLeft: 8,
+    paddingRight: 8,
   },
 }));
 
