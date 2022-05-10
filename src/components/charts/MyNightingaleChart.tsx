@@ -27,7 +27,7 @@ type MyNightingaleCharOption = echarts.ComposeOption<
 >;
 
 const MyNightingaleChart = (props: MyNightingaleChartProps) => {
-  const { data } = props;
+  const { data, sum } = props;
   const me = useRef<HTMLDivElement>(null);
   const echartRef = useRef<ECharts | null>(null);
   const optionsRef = useRef<MyNightingaleCharOption>({
@@ -83,21 +83,27 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
       : [];
     newSeries[0] = {
       ...newSeries[0],
-      data: Object.entries(data).reduce((arr, [key, value]) => {
-        const temp = value.map((ele) => ({
-          name: ele.title,
-          value: currencyToNumber(ele.money),
-        }));
-        arr = [...arr, ...temp];
-        return arr;
-      }, [] as { name: string; value: number }[]),
+      data: data.map((ele) => ({
+        name: ele.title,
+        value: currencyToNumber(ele.money),
+      })),
     };
     optionsRef.current = {
       ...optionsRef.current,
+      legend: {
+        ...optionsRef.current.legend,
+        formatter: (name) => {
+          const count = data.reduce(
+            (total, ele) => (total += currencyToNumber(ele.money)),
+            0
+          );
+          return `${name} \n${(count * 100 / sum).toFixed(2)}%`;
+        },
+      },
       series: newSeries,
     };
     echartRef.current.setOption(optionsRef.current);
-  }, [data]);
+  }, [data, sum]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -124,9 +130,8 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
 };
 
 export interface MyNightingaleChartProps {
-  data: {
-    [date: number]: TransRow[];
-  };
+  data: TransRow[];
+  sum: number;
 }
 
 export default MyNightingaleChart;

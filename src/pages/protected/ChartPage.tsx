@@ -41,22 +41,30 @@ const ChartPage = () => {
   const transData = useRecoilValue(
     transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
   );
-  const totalIncome = useMemo(() => {
-    return Object.values(transData).reduce((total, ele) => {
+  const expenseRows = useMemo(() => {
+    return Object.values(transData).reduce((arr, ele) => {
       ele.forEach((item) => {
-        if (item.type === "income") total += currencyToNumber(item.money);
+        if (item.type === "expense") arr.push(...ele);
       });
-      return total;
-    }, 0);
+      return arr;
+    }, []);
   }, [transData]);
-  const totalExpense = useMemo(() => {
-    return Object.values(transData).reduce((total, ele) => {
+  const incomeRows = useMemo(() => {
+    return Object.values(transData).reduce((arr, ele) => {
       ele.forEach((item) => {
-        if (item.type === "expense") total += currencyToNumber(item.money);
+        if (item.type === "income") arr.push(...ele);
       });
-      return total;
-    }, 0);
+      return arr;
+    }, []);
   }, [transData]);
+  const totalIncome = incomeRows.reduce(
+    (total, ele) => (total += currencyToNumber(ele.money)),
+    0
+  );
+  const totalExpense = expenseRows.reduce(
+    (total, ele) => (total += currencyToNumber(ele.money)),
+    0
+  );
 
   const handleTabOnChange = (evt: SyntheticEvent, newValue: number) => {
     setActivePanel(newValue);
@@ -92,14 +100,14 @@ const ChartPage = () => {
           <Tab
             label={
               <Box sx={{ color: (theme) => theme.palette.error.main }}>
-                支出 $${formatCurrencyWithPlaces(totalExpense)}
+                支出 ${formatCurrencyWithPlaces(totalExpense)}
               </Box>
             }
           />
           <Tab
             label={
               <Box sx={{ color: (theme) => theme.palette.success.main }}>
-                收入 $${formatCurrencyWithPlaces(totalIncome)}
+                收入 ${formatCurrencyWithPlaces(totalIncome)}
               </Box>
             }
           />
@@ -110,13 +118,19 @@ const ChartPage = () => {
           onSwiper={(swiper) => (swiperRef.current = swiper)}
         >
           <SwiperSlide style={{ width: "100vw", display: "flex" }}>
-            <Box className="section" sx={{ display: "flex", width: "100%" }}>
-              <MyNightingaleChart data={transData} />
-            </Box>
+            {expenseRows.length > 0 && (
+              <Box className="section" sx={{ display: "flex", width: "100%" }}>
+                <MyNightingaleChart data={expenseRows} sum={totalExpense} />
+              </Box>
+            )}
           </SwiperSlide>
-          <SwiperSlide
-            style={{ width: "100vw", display: "flex" }}
-          ></SwiperSlide>
+          <SwiperSlide style={{ width: "100vw", display: "flex" }}>
+            {incomeRows.length > 0 && (
+              <Box className="section" sx={{ display: "flex", width: "100%" }}>
+                <MyNightingaleChart data={incomeRows} sum={totalIncome} />
+              </Box>
+            )}
+          </SwiperSlide>
         </SwiperView>
       </Box>
     </StyledChartPage>
