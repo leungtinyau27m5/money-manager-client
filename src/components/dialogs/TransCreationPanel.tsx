@@ -1,11 +1,4 @@
-import {
-  forwardRef,
-  ReactElement,
-  Ref,
-  SyntheticEvent,
-  useRef,
-  useState,
-} from "react";
+import { SyntheticEvent, useRef, useState } from "react";
 import {
   AppBar,
   Backdrop,
@@ -13,12 +6,10 @@ import {
   CircularProgress,
   Dialog,
   IconButton,
-  Slide,
   Tab,
   Tabs,
   Toolbar,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import { Swiper as SwiperView, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
@@ -26,24 +17,12 @@ import type { Swiper } from "swiper";
 import ExpenseForm from "../forms/ExpenseForm";
 import IncomeForm from "../forms/IncomeForm";
 import { StorageCtxState } from "src/providers/storage/context";
-import { transAtom } from "src/data/transactions/transaction.atom";
-import { useSetRecoilState } from "recoil";
 import { v4 as uuidv4 } from "uuid";
 import { useSnackbar } from "notistack";
-
-const Transition = forwardRef(
-  (
-    props: TransitionProps & {
-      children: ReactElement;
-    },
-    ref: Ref<unknown>
-  ) => {
-    return <Slide direction="up" ref={ref} {...props} />;
-  }
-);
+import { TransitionSlideUp } from "../transitions";
 
 const TransCreationPanel = (props: TransCreationPanelProps) => {
-  const { open, onClose, updateItems, defaultDate } = props;
+  const { open, onClose, addItems, defaultDate } = props;
   const { enqueueSnackbar } = useSnackbar();
   const [activePanel, setActivePanel] = useState(0);
   const [showLoader, setShowLoader] = useState(false);
@@ -65,7 +44,7 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
     setShowLoader(true);
-    await updateItems(`${year}-${month}`, [
+    await addItems(`${year}-${month}`, [
       {
         money,
         title,
@@ -92,7 +71,7 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
       fullWidth
       open={open}
       onClose={() => onClose()}
-      TransitionComponent={Transition}
+      TransitionComponent={TransitionSlideUp}
       PaperProps={{
         sx: {
           margin: 0,
@@ -150,7 +129,7 @@ const TransCreationPanel = (props: TransCreationPanelProps) => {
 
 export interface TransCreationPanelProps {
   open: boolean;
-  updateItems: StorageCtxState["updateItems"];
+  addItems: StorageCtxState["addItems"];
   onClose: () => void;
   defaultDate?: Date;
 }

@@ -19,9 +19,13 @@ const StyledListItemButton = styled(ListItemButton)(() => ({
 }));
 
 export const Transaction = (props: TransactionProps) => {
-  const { iconKey, title, money, type } = props;
+  const { data, handleTransactionOnClick } = props;
+  const { iconKey, title, money, type } = data;
   return (
-    <StyledListItemButton className="transaction-item">
+    <StyledListItemButton
+      className="transaction-item"
+      onClick={() => handleTransactionOnClick(data)}
+    >
       <Box className="item-icon">
         <Box component="span" className="material-icons-round">
           {iconKey}
@@ -50,6 +54,9 @@ export const Transaction = (props: TransactionProps) => {
   );
 };
 
-export interface TransactionProps extends TransRow {}
+export interface TransactionProps {
+  handleTransactionOnClick: (data: TransRow) => void;
+  data: TransRow;
+}
 
 export default Transaction;

@@ -17,11 +17,15 @@ import {
 import ResponsiveTextBox from "src/components/text/ResponsiveTextBox";
 import { useSetRecoilState, useRecoilValue } from "recoil";
 import { dateAtom } from "src/data/date/date.atom";
-import { transSelectorByDate } from "src/data/transactions/transaction.atom";
+import {
+  TransRow,
+  transSelectorByDate,
+} from "src/data/transactions/transaction.atom";
 import DateTransaction from "src/containers/transactionContainer/DateTransaction";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { StorageCtx } from "src/providers/storage/context";
 import TransCreationPanel from "src/components/dialogs/TransCreationPanel";
+import TranModifyPanel from "src/components/dialogs/TranModifyPanel";
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   backgroundColor: "#FFCF48",
@@ -83,13 +87,14 @@ const StyledDashboardPage = styled(Box)(({ theme }) => ({
 const DashboardPage = () => {
   const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
+  const [showModify, setShowModify] = useState(false);
   const setDateAtom = useSetRecoilState(dateAtom);
   const [dateObj, setDateObj] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
-  // const [defaultDate, setDefaultDate] = useState(new Date());
   const defaultDate = useRef(new Date());
+  const modifyTarget = useRef<TransRow | null>(null);
   const transData = useRecoilValue(
     transSelectorByDate(`${dateObj.year}-${dateObj.month}`)
   );
@@ -121,6 +126,10 @@ const DashboardPage = () => {
   const toggleCreationByDate = (date: Date) => {
     defaultDate.current = date;
     setShowPanel(true);
+  };
+
+  const handleTransactionOnClick = (data: TransRow) => {
+    setShowModify(true)
   };
 
   return (
@@ -175,6 +184,7 @@ const DashboardPage = () => {
                 date={key}
                 rows={value}
                 toggleCreationByDate={toggleCreationByDate}
+                handleTransactionOnClick={handleTransactionOnClick}
               />
             )
         )}
@@ -192,12 +202,23 @@ const DashboardPage = () => {
         <AddRoundedIcon />
       </StyledIconButton>
       <StorageCtx.Consumer>
-        {({ updateItems }) => (
+        {({ addItems }) => (
           <TransCreationPanel
             open={showPanel}
-            updateItems={updateItems}
+            addItems={addItems}
             onClose={() => setShowPanel(false)}
             defaultDate={defaultDate.current}
+          />
+        )}
+      </StorageCtx.Consumer>
+      <StorageCtx.Consumer>
+        {({ updateItems, removeItems }) => (
+          <TranModifyPanel
+            updateItems={updateItems}
+            removeItems={removeItems}
+            open={showModify}
+            onClose={() => setShowModify(false)}
+            target={modifyTarget.current}
           />
         )}
       </StorageCtx.Consumer>

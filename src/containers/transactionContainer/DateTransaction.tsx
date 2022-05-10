@@ -1,5 +1,5 @@
 import { Box, ListItemButton, styled } from "@mui/material";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import Transaction from "src/components/catalog/Transaction";
 import { TransRow } from "src/data/transactions/transaction.atom";
 import {
@@ -37,7 +37,14 @@ const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 const DateTransaction = (props: DateTransactionProps) => {
-  const { rows, date, month, year, toggleCreationByDate } = props;
+  const {
+    rows,
+    date,
+    month,
+    year,
+    toggleCreationByDate,
+    handleTransactionOnClick,
+  } = props;
   const day = dayName[new Date(year, month, Number(date)).getDay()];
 
   const totalIncome = useMemo(() => {
@@ -87,7 +94,11 @@ const DateTransaction = (props: DateTransactionProps) => {
       </ListItemButton>
       <Box className="trans-board-body">
         {rows.map((ele) => (
-          <Transaction key={ele.id} {...ele} />
+          <Transaction
+            key={ele.id}
+            data={ele}
+            handleTransactionOnClick={handleTransactionOnClick}
+          />
         ))}
       </Box>
       <Box className="trans-board-trailing"></Box>
@@ -101,6 +112,7 @@ export interface DateTransactionProps {
   month: number;
   date: string;
   toggleCreationByDate: (date: Date) => void;
+  handleTransactionOnClick: (data: TransRow) => void;
 }
 
 export default DateTransaction;

@@ -28,10 +28,10 @@ const AddTransaction = () => {
         <AddRoundedIcon />
       </StyledIconButton>
       <StorageCtx.Consumer>
-        {({ store, updateItems }) => (
+        {({ addItems }) => (
           <TransCreationPanel
             open={showPanel}
-            updateItems={updateItems}
+            addItems={addItems}
             onClose={() => setShowPanel(false)}
           />
         )}
