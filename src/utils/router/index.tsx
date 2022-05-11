@@ -5,12 +5,12 @@ import PageLoader from "src/components/loader/PageLoader";
 const HomePage = loadable(() => import("src/pages/HomePage"), {
   fallback: <PageLoader />,
 });
-const LoginPage = loadable(() => import("src/pages/LoginPage"), {
-  fallback: <PageLoader />,
-});
-const RegisterPage = loadable(() => import("src/pages/RegisterPage"), {
-  fallback: <PageLoader />,
-});
+// const LoginPage = loadable(() => import("src/pages/LoginPage"), {
+//   fallback: <PageLoader />,
+// });
+// const RegisterPage = loadable(() => import("src/pages/RegisterPage"), {
+//   fallback: <PageLoader />,
+// });
 const ProtectedPage = loadable(() => import("src/pages/ProtectedPage"), {
   fallback: <PageLoader />,
 });
@@ -36,40 +36,57 @@ const ChartPage = loadable(() => import("src/pages/protected/ChartPage"), {
 const myRoutes: RouteObject[] = [
   {
     path: "/",
-    element: <HomePage />,
+    element: <ProtectedPage />,
     children: [
       {
-        path: "/login",
-        element: <LoginPage />,
+        index: true,
+        element: <DashboardPage />,
       },
       {
-        path: "/register",
-        element: <RegisterPage />,
-      },
-      {
-        path: "/dashboard",
-        element: <ProtectedPage />,
-        children: [
-          {
-            index: true,
-            element: <DashboardPage />,
-          },
-          // {
-          //   path: "category",
-          //   element: <CategoriesPage />,
-          // },
-          {
-            path: "chart",
-            element: <ChartPage />,
-          },
-          // {
-          //   path: "setting",
-          //   element: <SettingPage />,
-          // },
-        ],
+        path: "chart",
+        element: <ChartPage />,
       },
     ],
   },
 ];
+
+// const myRoutes: RouteObject[] = [
+//   {
+//     path: "/",
+//     element: <HomePage />,
+//     children: [
+//       {
+//         path: "/login",
+//         element: <LoginPage />,
+//       },
+//       {
+//         path: "/register",
+//         element: <RegisterPage />,
+//       },
+//       {
+//         path: "/dashboard",
+//         element: <ProtectedPage />,
+//         children: [
+//           {
+//             index: true,
+//             element: <DashboardPage />,
+//           },
+//           // {
+//           //   path: "category",
+//           //   element: <CategoriesPage />,
+//           // },
+//           {
+//             path: "chart",
+//             element: <ChartPage />,
+//           },
+//           // {
+//           //   path: "setting",
+//           //   element: <SettingPage />,
+//           // },
+//         ],
+//       },
+//     ],
+//   },
+// ];
 
 export default myRoutes;

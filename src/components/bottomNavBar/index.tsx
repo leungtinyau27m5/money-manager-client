@@ -62,10 +62,10 @@ const BottomNavBar = () => {
 
   return (
     <StyledBottomNavBar>
-      <Link to="/dashboard">
+      <Link to="/">
         <ButtonBase
           className={clsx("nav-item", {
-            active: location.pathname === "/dashboard",
+            active: location.pathname === "/",
           })}
         >
           <DashboardCustomizeRoundedIcon sx={{ color: "blueviolet" }} />
@@ -74,10 +74,10 @@ const BottomNavBar = () => {
           </Box>
         </ButtonBase>
       </Link>
-      <Link to="/dashboard/chart">
+      <Link to="/chart">
         <ButtonBase
           className={clsx("nav-item", {
-            active: location.pathname.match("/dashboard/chart"),
+            active: location.pathname.match("/chart"),
           })}
         >
           <PieChartRoundedIcon sx={{ color: "#20C046" }} />

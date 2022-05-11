@@ -70,7 +70,7 @@ const MainMenu = () => {
       </Box>
       <Box className="menu-body">
         <List>
-          <Link to="/dashboard" onClick={handleNavItemOnClick}>
+          <Link to="/" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
                 <DashboardCustomizeRoundedIcon sx={{ color: "blueviolet" }} />
@@ -78,7 +78,7 @@ const MainMenu = () => {
               <ListItemText>主頁</ListItemText>
             </ListItemButton>
           </Link>
-          <Link to="/dashboard/chart" onClick={handleNavItemOnClick}>
+          <Link to="/chart" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
                 <PieChartRoundedIcon sx={{ color: "#20C046" }} />
@@ -95,13 +95,13 @@ const MainMenu = () => {
             </ListItemButton>
           </Link> */}
           <Divider />
-          <ListItemButton>
+          {/* <ListItemButton>
             <ListItemIcon>
               <GetAppRoundedIcon sx={{ color: "#FFCF48" }} />
             </ListItemIcon>
             <ListItemText>導出</ListItemText>
           </ListItemButton>
-          <Divider />
+          <Divider /> */}
           {/* <Link to="/dashboard/setting" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
