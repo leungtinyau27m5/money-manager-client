@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { UIEvent, useMemo, useRef, useState } from "react";
 import {
   Box,
   ButtonBase,
@@ -148,28 +148,20 @@ const DashboardPage = () => {
     setShowModify(true);
   };
 
-  useLayoutEffect(() => {
-    const divEle = me.current;
-    if (!divEle) return;
-    const handleScroll = (evt: Event) => {
-      const target = evt.target as HTMLDivElement;
-      // const maxScrollHeight = target.scrollHeight - target.offsetHeight;
-      if (target.scrollTop > 50) {
-        divEle.classList.add("scrolled");
-      } else {
-        divEle.classList.remove("scrolled");
-      }
-    };
-    divEle.addEventListener("scroll", handleScroll);
-    return () => {
-      divEle.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  const handleScroll = (evt: UIEvent<HTMLDivElement>) => {
+    const target = evt.target as HTMLDivElement;
+    if (target.scrollTop > 50) {
+      target.classList.add("scrolled");
+    } else {
+      target.classList.remove("scrolled");
+    }
+  };
 
   return (
     <StyledDashboardPage
       className="page-inner has-app-bar has-bottom-nav min-scrollbar"
       ref={me}
+      onScroll={handleScroll}
     >
       <Box className="header">
         <ButtonBase

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   Box,
   ButtonBase,
@@ -13,6 +13,9 @@ import clsx from "clsx";
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   [`& .${paperClasses.root}`]: {
+    maxWidth: theme.pageMaxWidth,
+    marginLeft: "auto",
+    marginRight: "auto",
     "& > .year-wrapper": {
       display: "flex",
       "& > *": {

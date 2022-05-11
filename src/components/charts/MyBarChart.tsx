@@ -8,7 +8,6 @@ import {
   GridComponentOption,
   LegendComponent,
   LegendComponentOption,
-  ToolboxComponent,
   ToolboxComponentOption,
 } from "echarts/components";
 import { LabelLayout } from "echarts/features";

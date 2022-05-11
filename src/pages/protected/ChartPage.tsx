@@ -1,4 +1,12 @@
-import { useState, SyntheticEvent, useRef, useMemo } from "react";
+import {
+  useState,
+  SyntheticEvent,
+  useRef,
+  useMemo,
+  useId,
+  CSSProperties,
+  useCallback,
+} from "react";
 import { Box, styled, ButtonBase, Tabs, Tab, Typography } from "@mui/material";
 import {
   addLeadingZero,
@@ -10,9 +18,14 @@ import { Swiper as SwiperView, SwiperSlide } from "swiper/react";
 import type { Swiper } from "swiper";
 import "swiper/css";
 import MyNightingaleChart from "src/components/charts/MyNightingaleChart";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { transSelectorByDate } from "src/data/transactions/transaction.atom";
 import MyBarChart from "src/components/charts/MyBarChart";
+import YearMonthPicker from "src/components/myDatePicker/YearMonthPicker";
+import { dateAtom } from "src/data/date/date.atom";
+import MyLinearProgressAsChart from "src/components/charts/MyLinearProgressAsChart";
+import CategorizeTranRow from "src/containers/categorize/CategorizeTranRow";
+import { defaultColors } from "src/constants/types";
 
 const StyledChartPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -41,6 +54,7 @@ const StyledChartPage = styled(Box)(({ theme }) => ({
 const ChartPage = () => {
   const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
   const [activePanel, setActivePanel] = useState(0);
+  const setDateAtom = useSetRecoilState(dateAtom);
   const [dateObj, setDateObj] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -73,6 +87,14 @@ const ChartPage = () => {
     (total, ele) => (total += currencyToNumber(ele.money)),
     0
   );
+
+  const handleOnChange = (year: number, month: number) => {
+    setDateObj({
+      year,
+      month,
+    });
+    setDateAtom(new Date(`${year}/${month + 1}`));
+  };
 
   const handleTabOnChange = (evt: SyntheticEvent, newValue: number) => {
     setActivePanel(newValue);
@@ -135,23 +157,41 @@ const ChartPage = () => {
               rowGap: 12,
             }}
           >
-            <Box
-              className="section"
-              sx={{
-                display: "flex",
-                width: "100%",
-                paddingBottom: 1,
-                margin: 0,
-              }}
-            >
-              {expenseRows.length > 0 ? (
-                <MyNightingaleChart data={expenseRows} sum={totalExpense} />
-              ) : (
-                <Box className="no-data-chart">
-                  <Typography align="center">沒有資料...</Typography>
-                </Box>
+            <CategorizeTranRow tranRows={expenseRows} order="desc">
+              {(cat, sum) => (
+                <>
+                  <Box
+                    className="section"
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      paddingBottom: 1,
+                      margin: 0,
+                    }}
+                  >
+                    {expenseRows.length > 0 ? (
+                      <MyNightingaleChart data={cat} sum={sum} />
+                    ) : (
+                      <Box className="no-data-chart">
+                        <Typography align="center">沒有資料...</Typography>
+                      </Box>
+                    )}
+                  </Box>
+                  <Box className="section" sx={{ p: 1 }}>
+                    {cat.map((ele, index) => (
+                      <MyLinearProgressAsChart
+                        key={ele[0]}
+                        color={defaultColors[index % defaultColors.length]}
+                        icon={ele[1].icon}
+                        title={ele[0]}
+                        value={ele[1].value}
+                        percent={(ele[1].value * 100) / sum}
+                      />
+                    ))}
+                  </Box>
+                </>
               )}
-            </Box>
+            </CategorizeTranRow>
           </SwiperSlide>
           <SwiperSlide
             style={{
@@ -163,21 +203,44 @@ const ChartPage = () => {
               rowGap: 12,
             }}
           >
-            <Box
-              className="section"
-              sx={{ display: "flex", width: "100%", paddingBottom: 1 }}
-            >
-              {incomeRows.length > 0 ? (
-                <MyNightingaleChart data={incomeRows} sum={totalIncome} />
-              ) : (
-                <Box className="no-data-chart">
-                  <Typography align="center">沒有資料...</Typography>
-                </Box>
+            <CategorizeTranRow tranRows={incomeRows} order="desc">
+              {(cat, sum) => (
+                <>
+                  <Box
+                    className="section"
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      paddingBottom: 1,
+                      margin: 0,
+                    }}
+                  >
+                    {incomeRows.length > 0 ? (
+                      <MyNightingaleChart data={cat} sum={sum} />
+                    ) : (
+                      <Box className="no-data-chart">
+                        <Typography align="center">沒有資料...</Typography>
+                      </Box>
+                    )}
+                  </Box>
+                  <Box className="section" sx={{ p: 1 }}>
+                    {/* <MyLinearProgressAsChart color="#F0D" /> */}
+                  </Box>
+                </>
               )}
-            </Box>
+            </CategorizeTranRow>
           </SwiperSlide>
         </SwiperView>
       </Box>
+      <YearMonthPicker
+        open={showYearMonthPicker}
+        onClose={() => setShowYearMonthPicker(false)}
+        handleOnChange={handleOnChange}
+        defaultValue={{
+          year: dateObj.year,
+          month: dateObj.month,
+        }}
+      />
     </StyledChartPage>
   );
 };

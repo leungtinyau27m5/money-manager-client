@@ -1,43 +1,59 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import * as echarts from "echarts/core";
 import { PieChart, PieSeriesOption } from "echarts/charts";
-import { LegendComponent, LegendComponentOption } from "echarts/components";
+import {
+  LegendComponent,
+  LegendComponentOption,
+  TooltipComponent,
+  TooltipComponentOption,
+} from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { ECharts } from "echarts/core";
 import { LabelLayout } from "echarts/features";
-import { TransRow } from "src/data/transactions/transaction.atom";
-import { currencyToNumber, formatCurrencyWithPlaces } from "src/helpers/common";
+import { formatCurrencyWithPlaces } from "src/helpers/common";
+import { CategorizedType } from "src/containers/categorize/CategorizeTranRow";
 
-echarts.use([LegendComponent, PieChart, CanvasRenderer, LabelLayout]);
+echarts.use([
+  LegendComponent,
+  PieChart,
+  CanvasRenderer,
+  LabelLayout,
+  TooltipComponent,
+]);
 
 type MyNightingaleCharOption = echarts.ComposeOption<
-  LegendComponentOption | PieSeriesOption
+  LegendComponentOption | PieSeriesOption | TooltipComponentOption
 >;
 
-const MyNightingaleChart = (props: MyNightingaleChartProps) => {
+const MyNightingaleChart = memo((props: MyNightingaleChartProps) => {
   const { data, sum } = props;
   const me = useRef<HTMLDivElement>(null);
   const echartRef = useRef<ECharts | null>(null);
-  const names = useMemo(() => {
-    return data.reduce((arr, ele) => {
-      if (!arr.includes(ele.title)) arr.push(ele.title);
-      return arr;
-    }, [] as string[]);
-  }, [data]);
+  const names = data.reduce((arr, ele) => {
+    arr.push(ele[0]);
+    return arr;
+  }, [] as string[]);
   const optionsRef = useRef<MyNightingaleCharOption>({
     legend: {
       top: 10,
       align: "auto",
     },
+    tooltip: {
+      formatter: (params: any) => {
+        return `${params.name}: $${formatCurrencyWithPlaces(params.value)} \n(${
+          params.percent
+        }%)`;
+      },
+    },
     series: [
       {
         type: "pie",
-        radius: ["15%", "45%"],
+        radius: ["0%", "50%"],
         center: ["50%", "60%"],
         roseType: "area",
         itemStyle: {
-          borderRadius: 5,
+          borderRadius: 15,
         },
         label: {
           formatter: (param) =>
@@ -72,27 +88,20 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
     const newSeries = Array.isArray(optionsRef.current.series)
       ? [...optionsRef.current.series]
       : [];
-    const obj = {} as { [name: string]: number };
-    data.forEach((ele) => {
-      if (!(ele.title in obj)) {
-        obj[ele.title] = 0;
-      }
-      obj[ele.title] += currencyToNumber(ele.money);
-    });
     newSeries[0] = {
       ...newSeries[0],
-      data: Object.entries(obj).map(([key, value]) => ({ name: key, value })),
+      data: data.map((ele) => ({ name: ele[0], value: ele[1].value })),
     };
     optionsRef.current = {
       ...optionsRef.current,
       legend: {
         ...optionsRef.current.legend,
         formatter: (name) => {
-          const count = data.reduce((total, ele) => {
-            if (ele.title === name) total += currencyToNumber(ele.money);
-            return total;
-          }, 0);
-          return `${name} \n${((count * 100) / sum).toFixed(2)}%`;
+          const found = data.find((ele) => ele[0] === name);
+
+          return found
+            ? `${name} \n${((found[1].value * 100) / sum).toFixed(2)}%`
+            : name;
         },
         textStyle: {
           fontFamily: "Noto Sans TC",
@@ -121,16 +130,16 @@ const MyNightingaleChart = (props: MyNightingaleChartProps) => {
       ref={me}
       sx={{
         width: "100%",
-        height: 150 + Math.ceil(names.length / 4) * 115,
+        height: 110 + Math.ceil(names.length / 4) * 115,
         display: "flex",
         justifyContent: "center",
       }}
     ></Box>
   );
-};
+});
 
 export interface MyNightingaleChartProps {
-  data: TransRow[];
+  data: [string, CategorizedType][];
   sum: number;
 }
 

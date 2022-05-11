@@ -1,3 +1,5 @@
+import { CSSProperties } from "react";
+
 export type ItemTypes = {
   key: string;
   icon: string;
@@ -118,4 +120,16 @@ export const incomeTypes = [
     icon: "sell",
     text: "賣出",
   },
+];
+
+export const defaultColors: Exclude<CSSProperties["color"], undefined>[] = [
+  "#5470c6",
+  "#91cc75",
+  "#fac858",
+  "#ee6666",
+  "#73c0de",
+  "#3ba272",
+  "#fc8452",
+  "#9a60b4",
+  "#ea7ccc",
 ];

@@ -10,6 +10,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { MyStyledTextField } from "../forms/MyTextField";
 import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
+import BackspaceRoundedIcon from "@mui/icons-material/BackspaceRounded";
 
 const StyledDialog = styled(Dialog)(() => ({
   [`& .${dialogClasses.container}`]: {
@@ -134,6 +135,15 @@ const Calculator = (props: CalculatorProps) => {
     return a.length === 1 ? a : handleReduceCal(a);
   }, []);
 
+  const handleBackspace = () => {
+    const formula = getValues("formula");
+    if (formula.match(/\s$/)) {
+      setValue("formula", formula.slice(0, -3));
+    } else {
+      setValue("formula", formula.slice(0, -1));
+    }
+  };
+
   const handleSubmit = useCallback(() => {
     const formula = getValues("formula");
     if (formula.match(/[*\-+/]/)) {
@@ -168,6 +178,8 @@ const Calculator = (props: CalculatorProps) => {
         handleOperation(key as any);
       } else if ("Enter" === key) {
         handleSubmit();
+      } else if ("Backspace" === key) {
+        handleBackspace();
       }
     };
     if (open) window.addEventListener("keyup", handleKeyUp);
@@ -224,7 +236,6 @@ const Calculator = (props: CalculatorProps) => {
         <Box className="cal-keyboard">
           <ButtonBase
             sx={{
-              gridColumnEnd: "span 2",
               backgroundColor: (theme) => theme.palette.secondary.main,
             }}
             onClick={resetValues}
@@ -233,6 +244,9 @@ const Calculator = (props: CalculatorProps) => {
           </ButtonBase>
           <ButtonBase onClick={() => handleOperation("/")}>/</ButtonBase>
           <ButtonBase onClick={() => handleOperation("*")}>*</ButtonBase>
+          <ButtonBase onClick={() => handleBackspace()}>
+            <BackspaceRoundedIcon sx={{ color: "white" }} />
+          </ButtonBase>
           <ButtonBase onClick={() => handleNumberKey("7")}>7</ButtonBase>
           <ButtonBase onClick={() => handleNumberKey("8")}>8</ButtonBase>
           <ButtonBase onClick={() => handleNumberKey("9")}>9</ButtonBase>
