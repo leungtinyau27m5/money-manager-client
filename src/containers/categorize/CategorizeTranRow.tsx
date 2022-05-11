@@ -1,9 +1,10 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 import { TransRow } from "src/data/transactions/transaction.atom";
 import { currencyToNumber } from "src/helpers/common";
 
 const CategorizeTranRow = (props: CategorizeTranRowProps) => {
   const { tranRows, children, order = "asc" } = props;
+  const max = useRef({ title: "", value: 0 });
   const sum = useMemo(() => {
     return tranRows.reduce(
       (total, ele) => (total += currencyToNumber(ele.money)),
@@ -23,13 +24,19 @@ const CategorizeTranRow = (props: CategorizeTranRowProps) => {
         };
       }
       obj[ele.title].value += currencyToNumber(ele.money);
+      if (obj[ele.title].value > max.current.value) {
+        max.current = {
+          title: ele.title,
+          value: obj[ele.title].value,
+        };
+      }
     });
     const sorted = Object.entries(obj).sort((a, b) =>
       order === "asc" ? a[1].value - b[1].value : b[1].value - a[1].value
     );
     return sorted;
   }, [order, tranRows]);
-  return <>{children(cat, sum)}</>;
+  return <>{children(cat, sum, max.current)}</>;
 };
 
 export type CategorizedType = {
@@ -40,7 +47,11 @@ export type CategorizedType = {
 
 export interface CategorizeTranRowProps {
   tranRows: TransRow[];
-  children: (cat: [string, CategorizedType][], sum: number) => ReactNode;
+  children: (
+    cat: [string, CategorizedType][],
+    sum: number,
+    max: { title: string; value: number }
+  ) => ReactNode;
   order?: "desc" | "asc";
 }
 

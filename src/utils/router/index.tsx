@@ -14,12 +14,12 @@ const RegisterPage = loadable(() => import("src/pages/RegisterPage"), {
 const ProtectedPage = loadable(() => import("src/pages/ProtectedPage"), {
   fallback: <PageLoader />,
 });
-const CategoriesPage = loadable(
-  () => import("src/pages/protected/CategoriesPage"),
-  {
-    fallback: <PageLoader />,
-  }
-);
+// const CategoriesPage = loadable(
+//   () => import("src/pages/protected/CategoriesPage"),
+//   {
+//     fallback: <PageLoader />,
+//   }
+// );
 const DashboardPage = loadable(
   () => import("src/pages/protected/DashboardPage"),
   {
@@ -29,9 +29,9 @@ const DashboardPage = loadable(
 const ChartPage = loadable(() => import("src/pages/protected/ChartPage"), {
   fallback: <PageLoader />,
 });
-const SettingPage = loadable(() => import("src/pages/protected/SettingPage"), {
-  fallback: <PageLoader />,
-});
+// const SettingPage = loadable(() => import("src/pages/protected/SettingPage"), {
+//   fallback: <PageLoader />,
+// });
 
 const myRoutes: RouteObject[] = [
   {
@@ -54,18 +54,18 @@ const myRoutes: RouteObject[] = [
             index: true,
             element: <DashboardPage />,
           },
-          {
-            path: "category",
-            element: <CategoriesPage />,
-          },
+          // {
+          //   path: "category",
+          //   element: <CategoriesPage />,
+          // },
           {
             path: "chart",
             element: <ChartPage />,
           },
-          {
-            path: "setting",
-            element: <SettingPage />,
-          },
+          // {
+          //   path: "setting",
+          //   element: <SettingPage />,
+          // },
         ],
       },
     ],

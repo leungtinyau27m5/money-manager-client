@@ -1,12 +1,4 @@
-import {
-  useState,
-  SyntheticEvent,
-  useRef,
-  useMemo,
-  useId,
-  CSSProperties,
-  useCallback,
-} from "react";
+import { useState, SyntheticEvent, useRef, useMemo } from "react";
 import { Box, styled, ButtonBase, Tabs, Tab, Typography } from "@mui/material";
 import {
   addLeadingZero,
@@ -17,15 +9,20 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import { Swiper as SwiperView, SwiperSlide } from "swiper/react";
 import type { Swiper } from "swiper";
 import "swiper/css";
-import MyNightingaleChart from "src/components/charts/MyNightingaleChart";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { transSelectorByDate } from "src/data/transactions/transaction.atom";
-import MyBarChart from "src/components/charts/MyBarChart";
 import YearMonthPicker from "src/components/myDatePicker/YearMonthPicker";
 import { dateAtom } from "src/data/date/date.atom";
-import MyLinearProgressAsChart from "src/components/charts/MyLinearProgressAsChart";
 import CategorizeTranRow from "src/containers/categorize/CategorizeTranRow";
 import { defaultColors } from "src/constants/types";
+import loadable from "@loadable/component";
+
+const MyNightingaleChart = loadable(
+  () => import("src/components/charts/MyNightingaleChart")
+);
+const MyLinearProgressAsChart = loadable(
+  () => import("src/components/charts/MyLinearProgressAsChart")
+);
 
 const StyledChartPage = styled(Box)(({ theme }) => ({
   backgroundColor: "whitesmoke",
@@ -157,41 +154,52 @@ const ChartPage = () => {
               rowGap: 12,
             }}
           >
-            <CategorizeTranRow tranRows={expenseRows} order="desc">
-              {(cat, sum) => (
-                <>
-                  <Box
-                    className="section"
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      paddingBottom: 1,
-                      margin: 0,
-                    }}
-                  >
-                    {expenseRows.length > 0 ? (
+            {expenseRows.length > 0 ? (
+              <CategorizeTranRow tranRows={expenseRows} order="desc">
+                {(cat, sum, max) => (
+                  <>
+                    <Box
+                      className="section"
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                        paddingBottom: 1,
+                        margin: 0,
+                      }}
+                    >
                       <MyNightingaleChart data={cat} sum={sum} />
-                    ) : (
-                      <Box className="no-data-chart">
-                        <Typography align="center">沒有資料...</Typography>
-                      </Box>
-                    )}
-                  </Box>
-                  <Box className="section" sx={{ p: 1 }}>
-                    {cat.map((ele, index) => (
-                      <MyLinearProgressAsChart
-                        key={ele[0]}
-                        color={defaultColors[index % defaultColors.length]}
-                        icon={ele[1].icon}
-                        title={ele[0]}
-                        value={ele[1].value}
-                        percent={(ele[1].value * 100) / sum}
-                      />
-                    ))}
-                  </Box>
-                </>
-              )}
-            </CategorizeTranRow>
+                    </Box>
+                    <Box className="section" sx={{ p: 1 }}>
+                      {cat.map((ele, index) => (
+                        <MyLinearProgressAsChart
+                          key={ele[0]}
+                          color={defaultColors[index % defaultColors.length]}
+                          icon={ele[1].icon}
+                          title={ele[0]}
+                          value={ele[1].value}
+                          max={max}
+                          percent={(ele[1].value * 100) / sum}
+                        />
+                      ))}
+                    </Box>
+                  </>
+                )}
+              </CategorizeTranRow>
+            ) : (
+              <Box
+                className="section"
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  paddingBottom: 1,
+                  margin: 0,
+                }}
+              >
+                <Box className="no-data-chart">
+                  <Typography align="center">沒有資料...</Typography>
+                </Box>
+              </Box>
+            )}
           </SwiperSlide>
           <SwiperSlide
             style={{
@@ -203,32 +211,52 @@ const ChartPage = () => {
               rowGap: 12,
             }}
           >
-            <CategorizeTranRow tranRows={incomeRows} order="desc">
-              {(cat, sum) => (
-                <>
-                  <Box
-                    className="section"
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      paddingBottom: 1,
-                      margin: 0,
-                    }}
-                  >
-                    {incomeRows.length > 0 ? (
+            {incomeRows.length > 0 ? (
+              <CategorizeTranRow tranRows={incomeRows} order="desc">
+                {(cat, sum, max) => (
+                  <>
+                    <Box
+                      className="section"
+                      sx={{
+                        display: "flex",
+                        width: "100%",
+                        paddingBottom: 1,
+                        margin: 0,
+                      }}
+                    >
                       <MyNightingaleChart data={cat} sum={sum} />
-                    ) : (
-                      <Box className="no-data-chart">
-                        <Typography align="center">沒有資料...</Typography>
-                      </Box>
-                    )}
-                  </Box>
-                  <Box className="section" sx={{ p: 1 }}>
-                    {/* <MyLinearProgressAsChart color="#F0D" /> */}
-                  </Box>
-                </>
-              )}
-            </CategorizeTranRow>
+                    </Box>
+                    <Box className="section" sx={{ p: 1 }}>
+                      {cat.map((ele, index) => (
+                        <MyLinearProgressAsChart
+                          key={ele[0]}
+                          color={defaultColors[index % defaultColors.length]}
+                          icon={ele[1].icon}
+                          title={ele[0]}
+                          value={ele[1].value}
+                          max={max}
+                          percent={(ele[1].value * 100) / sum}
+                        />
+                      ))}
+                    </Box>
+                  </>
+                )}
+              </CategorizeTranRow>
+            ) : (
+              <Box
+                className="section"
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  paddingBottom: 1,
+                  margin: 0,
+                }}
+              >
+                <Box className="no-data-chart">
+                  <Typography align="center">沒有資料...</Typography>
+                </Box>
+              </Box>
+            )}
           </SwiperSlide>
         </SwiperView>
       </Box>

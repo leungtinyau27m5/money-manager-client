@@ -86,7 +86,7 @@ const BottomNavBar = () => {
           </Box>
         </ButtonBase>
       </Link>
-      <Link to="/dashboard/category">
+      {/* <Link to="/dashboard/category">
         <ButtonBase
           className={clsx("nav-item", {
             active: location.pathname.match("/dashboard/category"),
@@ -97,8 +97,8 @@ const BottomNavBar = () => {
             種類
           </Box>
         </ButtonBase>
-      </Link>
-      <Link to="/dashboard/setting">
+      </Link> */}
+      {/* <Link to="/dashboard/setting">
         <ButtonBase
           className={clsx("nav-item", {
             active: location.pathname.match("/dashboard/setting"),
@@ -109,7 +109,7 @@ const BottomNavBar = () => {
             設置
           </Box>
         </ButtonBase>
-      </Link>
+      </Link> */}
     </StyledBottomNavBar>
   );
 };

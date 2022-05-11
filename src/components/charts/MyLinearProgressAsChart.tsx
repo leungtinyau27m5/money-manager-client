@@ -32,7 +32,7 @@ const StyledBox = styled(ListItemButton)(() => ({
 }));
 
 const MyLinearProgressAsChart = (props: MyLinearProgressAsChartProps) => {
-  const { color, icon, title, value, percent } = props;
+  const { color, icon, title, value, percent, max } = props;
   return (
     <StyledBox>
       <Box className="icon-container">
@@ -65,7 +65,7 @@ const MyLinearProgressAsChart = (props: MyLinearProgressAsChartProps) => {
                 backgroundColor: color,
               },
             }}
-            value={percent}
+            value={(value * 100) / max.value}
           />
         </Box>
       </Box>
@@ -79,6 +79,7 @@ export interface MyLinearProgressAsChartProps {
   title: string;
   value: number;
   percent: number;
+  max: { title: string; value: number };
 }
 
 export default MyLinearProgressAsChart;

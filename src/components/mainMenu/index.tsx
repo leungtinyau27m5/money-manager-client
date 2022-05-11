@@ -86,14 +86,14 @@ const MainMenu = () => {
               <ListItemText>圖表</ListItemText>
             </ListItemButton>
           </Link>
-          <Link to="/dashboard/category" onClick={handleNavItemOnClick}>
+          {/* <Link to="/dashboard/category" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
                 <CategoryRoundedIcon color="primary" />
               </ListItemIcon>
               <ListItemText>種類</ListItemText>
             </ListItemButton>
-          </Link>
+          </Link> */}
           <Divider />
           <ListItemButton>
             <ListItemIcon>
@@ -102,14 +102,14 @@ const MainMenu = () => {
             <ListItemText>導出</ListItemText>
           </ListItemButton>
           <Divider />
-          <Link to="/dashboard/setting" onClick={handleNavItemOnClick}>
+          {/* <Link to="/dashboard/setting" onClick={handleNavItemOnClick}>
             <ListItemButton>
               <ListItemIcon>
                 <PermDataSettingRoundedIcon color="secondary" />
               </ListItemIcon>
               <ListItemText>設置</ListItemText>
             </ListItemButton>
-          </Link>
+          </Link> */}
         </List>
       </Box>
       <Box className="menu-trailing"></Box>
