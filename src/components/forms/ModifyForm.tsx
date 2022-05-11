@@ -239,7 +239,7 @@ const ModifyForm = (props: ModifyFormProps) => {
           <Controller
             control={control}
             name="note"
-            defaultValue=""
+            defaultValue={data.note}
             render={({ field }) => (
               <MyStyledTextField
                 {...field}
